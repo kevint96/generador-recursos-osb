@@ -1,0 +1,6 @@
+streamlit
+python-docx
+gspread
+openpyxl
+pandas
+lxml
