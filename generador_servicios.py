@@ -2293,7 +2293,8 @@ def generar_proyecto():
                         elif isinstance(valor, bytes): 
                             st.code(valor.decode("utf-8", errors="ignore")[:500], language="xml") 
                         else: 
-                            st.write("Contenido no es str ni bytes, es:", type(valor)) st.write(valor)
+                            st.write("Contenido no es str ni bytes, es:", type(valor)) 
+                        st.write(valor)
                         
                         
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
