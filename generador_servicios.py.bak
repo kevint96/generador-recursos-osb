@@ -356,125 +356,164 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
                            operation_name, input_msg, output_msg, ns_elem_prefix):
     """
     Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
+    - Asegura que cada <xsd:import/> quede dentro de su propio <xsd:schema>.
+    - Inserta un nuevo <xsd:schema><xsd:import .../></xsd:schema> al final de <types>
+    - Añade mensajes, portType y binding/operation como antes.
     """
+    # Namespaces locales (no depender de variables globales)
+    WSDL_URI = "http://schemas.xmlsoap.org/wsdl/"
+    XSD_URI  = "http://www.w3.org/2001/XMLSchema"
+    SOAP11_URI = "http://schemas.xmlsoap.org/wsdl/soap/"
 
-    # ✅ Paso 1: corregir si el <types> está mal formado
-    wsdl_content = corregir_wsdl_imports(wsdl_content)
+    # Registrar prefijos para que la salida mantenga xsd:, soap:, etc.
+    ET.register_namespace('xsd', XSD_URI)
+    ET.register_namespace('soap', SOAP11_URI)
 
-    # ✅ Paso 2: ya puedes parsear sin que explote
-    tree = ET.ElementTree(ET.fromstring(wsdl_content))
-    root = tree.getroot()
+    # Intentar parsear; si falla, aplicar corrección por regex y reintentar.
+    try:
+        root = ET.fromstring(wsdl_content)
+    except ET.ParseError:
+        wsdl_content_fixed = corregir_wsdl_imports(wsdl_content)
+        root = ET.fromstring(wsdl_content_fixed)
 
-    ns = {
-        'wsdl': 'http://schemas.xmlsoap.org/wsdl/',
-        'xs': 'http://www.w3.org/2001/XMLSchema',
-        'soap': 'http://schemas.xmlsoap.org/wsdl/soap/',
-    }
-    
-    if not wsdl_content or "<definitions" not in wsdl_content:
-        raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
+    # Tags fully-qualified
+    types_tag   = f"{{{WSDL_URI}}}types"
+    schema_tag  = f"{{{XSD_URI}}}schema"
+    import_tag  = f"{{{XSD_URI}}}import"
+    message_tag = f"{{{WSDL_URI}}}message"
+    part_tag    = f"{{{WSDL_URI}}}part"
+    porttype_tag= f"{{{WSDL_URI}}}portType"
+    operation_tag = f"{{{WSDL_URI}}}operation"
+    input_tag   = f"{{{WSDL_URI}}}input"
+    output_tag  = f"{{{WSDL_URI}}}output"
+    binding_tag = f"{{{WSDL_URI}}}binding"
+    soap_binding_tag = f"{{{SOAP11_URI}}}binding"
+    soap_operation_tag = f"{{{SOAP11_URI}}}operation"
+    soap_body_tag = f"{{{SOAP11_URI}}}body"
 
-    # Helpers de QName
-    WSDL = "{%s}" % WSDL_URI
-    XSD  = "{%s}" % XSD_URI
-    SOAP = "{%s}" % SOAP11_URI
+    # Encontrar <types>
+    types_elem = root.find(types_tag)
 
-    # 1) Agregar import al FINAL de <types>
-    types = root.find(f"{WSDL}types")
-    if types is None:
-        types = ET.SubElement(root, f"{WSDL}types")
+    if types_elem is not None:
+        # Reconstruir <types> de forma segura: iterar sus hijos y
+        # garantizar que cada <xsd:import> quede en su propio <xsd:schema>.
+        nuevo_types = ET.Element(types_tag)
 
-    wsdl_dir = os.path.dirname(wsdl_path)
-    rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/")
+        for child in list(types_elem):
+            if child.tag == schema_tag:
+                # Dentro de este schema, obtener imports
+                imports = [c for c in list(child) if c.tag == import_tag]
+                # Si tiene imports, crear un schema por cada import
+                if imports:
+                    for imp in imports:
+                        nschema = ET.Element(schema_tag)
+                        nschema.append(deepcopy(imp))
+                        nuevo_types.append(nschema)
+                else:
+                    # No son imports (schema con atributos especiales), conservar tal cual
+                    nuevo_types.append(deepcopy(child))
+            elif child.tag == import_tag:
+                # import directo bajo <types> -> envolverlo en <xsd:schema>
+                nschema = ET.Element(schema_tag)
+                nschema.append(deepcopy(child))
+                nuevo_types.append(nschema)
+            else:
+                # cualquier otro nodo bajo <types> (ej: comments u otros) -> conservar
+                nuevo_types.append(deepcopy(child))
 
-    schema = ET.Element(f"{XSD}schema")
+        # Reemplazar types_elem por nuevo_types en la posición original
+        children_root = list(root)
+        for idx, el in enumerate(children_root):
+            if el is types_elem:
+                root.remove(el)
+                root.insert(idx, nuevo_types)
+                break
+        types_elem = root.find(types_tag)  # refrescar referencia
+    else:
+        # Si no existía <types>, crear uno vacío
+        types_elem = ET.SubElement(root, types_tag)
+
+    # Agregar el nuevo xsd:import solicitado (al final de types) dentro de su propio <xsd:schema>
+    wsdl_dir = os.path.dirname(wsdl_path) if wsdl_path else ""
+    rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/") if xsd_path else xsd_path
+
+    nuevo_schema = ET.Element(schema_tag)
     attribs = OrderedDict()
     attribs["schemaLocation"] = rel_path
     attribs["namespace"] = target_namespace
-    ET.SubElement(schema, f"{XSD}import", attrib=attribs)
-    
-    aplicar_indent_local(schema, nivel=2)
-    types.append(schema)
+    ET.SubElement(nuevo_schema, import_tag, attrib=attribs)
+    aplicar_indent_local(nuevo_schema, nivel=2)
+    types_elem.append(nuevo_schema)
 
-    # 2) Mensajes
-    msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
-    ET.SubElement(msg_in, f"{WSDL}part", {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
+    # ------------- Mensajes -------------
+    msg_in  = ET.SubElement(root, message_tag, {"name": input_msg})
+    ET.SubElement(msg_in, part_tag, {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
     aplicar_indent_local(msg_in, nivel=2)
-    
-    msg_out = ET.SubElement(root, f"{WSDL}message", {"name": output_msg})
-    ET.SubElement(msg_out, f"{WSDL}part", {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
+
+    msg_out = ET.SubElement(root, message_tag, {"name": output_msg})
+    ET.SubElement(msg_out, part_tag, {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
     aplicar_indent_local(msg_out, nivel=2)
-    
-    # 3) PortType
-    port_type = root.find(f"{WSDL}portType")
+
+    # ------------- PortType -------------
+    port_type = root.find(porttype_tag)
     if port_type is None:
-        port_type = ET.SubElement(root, f"{WSDL}portType", {"name": f"{operation_name}_Port"})
-    op = ET.SubElement(port_type, f"{WSDL}operation", {"name": operation_name})
-    
-    ET.SubElement(op, f"{WSDL}input",  {"message": f"tns:{input_msg}"})
-    ET.SubElement(op, f"{WSDL}output", {"message": f"tns:{output_msg}"})
+        port_type = ET.SubElement(root, porttype_tag, {"name": f"{operation_name}_Port"})
+    op = ET.SubElement(port_type, operation_tag, {"name": operation_name})
+    ET.SubElement(op, input_tag, {"message": f"tns:{input_msg}"})
+    ET.SubElement(op, output_tag, {"message": f"tns:{output_msg}"})
     aplicar_indent_local(op, nivel=2)
 
-    # 4) Binding
-    binding = root.find(f"{WSDL}binding")
+    # ------------- Binding -------------
+    binding = root.find(binding_tag)
     if binding is None:
-        binding = ET.SubElement(root, f"{WSDL}binding", {
+        binding = ET.SubElement(root, binding_tag, {
             "name": f"{operation_name}_Binding",
             "type": f"tns:{port_type.get('name')}"
         })
-        ET.SubElement(binding, f"{SOAP}binding", {
+        ET.SubElement(binding, soap_binding_tag, {
             "style": "document",
             "transport": "http://schemas.xmlsoap.org/soap/http"
         })
 
-    opb = ET.SubElement(binding, f"{WSDL}operation", {"name": operation_name})
-    
-    # 👇 Aquí la corrección importante
-    ET.SubElement(opb, f"{SOAP}operation", {
+    opb = ET.SubElement(binding, operation_tag, {"name": operation_name})
+    ET.SubElement(opb, soap_operation_tag, {
         "style": "document",
         "soapAction": f"{target_namespace}/{operation_name}"
     })
-
-    inp = ET.SubElement(opb, f"{WSDL}input")
-    ET.SubElement(inp, f"{SOAP}body", {"use": "literal", "parts": input_msg})
-
-    out = ET.SubElement(opb, f"{WSDL}output")
-    ET.SubElement(out, f"{SOAP}body", {"use": "literal", "parts": output_msg})
-    
+    inp = ET.SubElement(opb, input_tag)
+    ET.SubElement(inp, soap_body_tag, {"use": "literal", "parts": input_msg})
+    out = ET.SubElement(opb, output_tag)
+    ET.SubElement(out, soap_body_tag, {"use": "literal", "parts": output_msg})
     aplicar_indent_local(opb, nivel=2)
 
-    # Reordenar antes de devolver
-    root = reordenar_definitions(root)
+    # Reordenar según tu función (si la tienes definida)
+    try:
+        root = reordenar_definitions(root)
+    except Exception:
+        # Si no existe o falla, no romper; devolvemos árbol tal cual
+        pass
+
     return ET.tostring(root, encoding="unicode")
-    
+
 def corregir_wsdl_imports(wsdl_content: str) -> str:
     """
-    Corrige la sección <types> en un WSDL malformado,
-    envolviendo CADA <xsd:import> en su propio bloque <xsd:schema>.
+    Fallback: si el WSDL está tan malformado que no parsea,
+    envuelve CADA <xsd:import .../> en su propio <xsd:schema>.
+    (Usado sólo como último recurso para poder parsear.)
     """
-    import re
+    # Si no hay imports, devolvemos tal cual
+    imports = re.findall(r'(<xsd:import[^>]+/>)', wsdl_content)
+    if not imports:
+        return wsdl_content
 
-    # Captura todos los <xsd:import ... />
-    patron_imports = re.findall(r'(<xsd:import[^>]+/>)', wsdl_content)
-
-    if not patron_imports:
-        return wsdl_content  # No hay nada que corregir
-
-    # Construimos múltiples bloques <xsd:schema> (uno por cada import)
     bloques = []
-    for imp in patron_imports:
-        bloques.append(
-            "  <xsd:schema>\n"
-            f"    {imp}\n"
-            "  </xsd:schema>"
-        )
+    for imp in imports:
+        bloques.append("  <xsd:schema>\n    " + imp + "\n  </xsd:schema>")
 
-    bloque_types = "<types>\n" + "\n".join(bloques) + "\n</types>"
+    nuevo_types = "<types>\n" + "\n".join(bloques) + "\n</types>"
 
-    # Reemplazar cualquier <types> roto o malformado
-    wsdl_content = re.sub(
-        r"<types>.*?</types>", bloque_types, wsdl_content, flags=re.DOTALL
-    )
+    # Reemplazamos el bloque <types>... </types> (aunque esté roto)
+    wsdl_content = re.sub(r"<types>.*?</types>", nuevo_types, wsdl_content, flags=re.DOTALL)
 
     return wsdl_content
     

@@ -34,6 +34,7 @@ import textwrap
 from datetime import datetime
 import io
 from xml.dom import minidom
+from copy import deepcopy
 # -------------------------------
 # Funciones para generar archivos
 # -------------------------------
