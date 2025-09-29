@@ -535,34 +535,28 @@ def crear_wsdl_exp(service_name: str,
 def obtener_namespace_y_binding(wsdl_input):
     import xml.etree.ElementTree as ET
 
-    if isinstance(wsdl_input, str):
-        # Buscar el inicio real del XML
-        start = wsdl_input.find("<definitions")
-        if start > 0:
-            wsdl_input = wsdl_input[start:]
-        if not wsdl_input.strip():
-            raise ValueError("❌ El WSDL está vacío después de limpiar.")
-
-        root = ET.fromstring(wsdl_input)
-
-    elif isinstance(wsdl_input, bytes):
-        wsdl_input = wsdl_input.decode("utf-8", errors="ignore")
-        start = wsdl_input.find("<definitions")
-        if start > 0:
-            wsdl_input = wsdl_input[start:]
-        root = ET.fromstring(wsdl_input)
-
-    elif isinstance(wsdl_input, ET.Element):
-        root = wsdl_input
+    # Si es ruta, abrimos el archivo
+    if isinstance(wsdl_input, str) and wsdl_input.endswith(".wsdl"):
+        with open(wsdl_input, "r", encoding="utf-8") as f:
+            xml_content = f.read()
     else:
-        raise ValueError(f"❌ Tipo no soportado: {type(wsdl_input)}")
+        # Asumimos que ya es contenido XML
+        xml_content = wsdl_input
 
-    wsdl_ns = "{http://schemas.xmlsoap.org/wsdl/}"
-    target_namespace = root.attrib.get("targetNamespace", "")
-    binding = root.find(f"{wsdl_ns}binding")
-    binding_name = binding.attrib.get("name", "") if binding is not None else ""
+    # Parsear solo si es XML válido
+    try:
+        root = ET.fromstring(xml_content)
+    except ET.ParseError as e:
+        raise ValueError(f"❌ Error al parsear WSDL: {e}\nContenido recibido (primeros 500 chars):\n{xml_content[:500]}")
 
-    return target_namespace, binding_name
+    # Aquí extraes namespace y binding
+    namespace = root.attrib.get("targetNamespace", "")
+    binding = None
+    for binding_elem in root.findall(".//{http://schemas.xmlsoap.org/wsdl/}binding"):
+        binding = binding_elem.attrib.get("name")
+        break
+
+    return namespace, binding
 
 def quitar_extension(ruta: str) -> str:
     return str(Path(ruta).with_suffix(""))
@@ -2291,16 +2285,12 @@ def generar_proyecto():
                         st.success(f"✅ Archivos generados correctamente. {st.session_state['archivo_wsdl_exp']}")
                         
                         valor = st.session_state["archivo_wsdl_exp"]
-
-                        st.write("👉 Tipo de archivo_wsdl_exp:", type(valor))
+                        st.write("👉 Tipo real:", type(valor))
 
                         if isinstance(valor, str):
-                            st.code(valor[:500], language="xml")  # muestra los primeros 500 caracteres
-                        elif isinstance(valor, bytes):
-                            st.code(valor.decode("utf-8", errors="ignore")[:500], language="xml")
+                            st.text(f"Preview contenido (500 chars): {valor[:500]}")
                         else:
-                            st.write("Contenido no es str ni bytes, es:", type(valor))
-                            st.write(valor)
+                            st.write("Contenido no es str, es:", type(valor))
                         
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
                         

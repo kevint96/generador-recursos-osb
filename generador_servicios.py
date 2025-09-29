@@ -354,7 +354,6 @@ def aplicar_indent_local(elem, nivel=1, espacio="  "):
 
 def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
                            operation_name, input_msg, output_msg, ns_elem_prefix):
-
     """
     Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
     """
@@ -370,9 +369,6 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     
     if not wsdl_content or "<definitions" not in wsdl_content:
         raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
-
-    # --- Parsear
-    root = ET.fromstring(wsdl_content)
 
     # Helpers de QName
     WSDL = "{%s}" % WSDL_URI
@@ -393,11 +389,10 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     attribs["namespace"] = target_namespace
     ET.SubElement(schema, f"{XSD}import", attrib=attribs)
     
-    # 👇 Aplicar indentación SOLO a este bloque
     aplicar_indent_local(schema, nivel=2)
     types.append(schema)
 
-    # 4) Mensajes
+    # 2) Mensajes
     msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
     ET.SubElement(msg_in, f"{WSDL}part", {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
     aplicar_indent_local(msg_in, nivel=2)
@@ -406,7 +401,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     ET.SubElement(msg_out, f"{WSDL}part", {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
     aplicar_indent_local(msg_out, nivel=2)
     
-    # 5) PortType
+    # 3) PortType
     port_type = root.find(f"{WSDL}portType")
     if port_type is None:
         port_type = ET.SubElement(root, f"{WSDL}portType", {"name": f"{operation_name}_Port"})
@@ -416,22 +411,32 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     ET.SubElement(op, f"{WSDL}output", {"message": f"tns:{output_msg}"})
     aplicar_indent_local(op, nivel=2)
 
-    # 6) Binding
+    # 4) Binding
     binding = root.find(f"{WSDL}binding")
     if binding is None:
         binding = ET.SubElement(root, f"{WSDL}binding", {"name": f"{operation_name}_Binding",
-                                                         "type": f"tns:{port_type.get('name')}"})
-        ET.SubElement(binding, f"{SOAP}binding", {"style": "document",
-                                                  "transport": "http://schemas.xmlsoap.org/soap/http"})
+                                                         "type": f"tns:{port_type.get('name')}"} )
+        ET.SubElement(binding, f"{SOAP}binding", {
+            "style": "document",
+            "transport": "http://schemas.xmlsoap.org/soap/http"
+        })
+
     opb = ET.SubElement(binding, f"{WSDL}operation", {"name": operation_name})
     
-    ET.SubElement(opb, f"{SOAP}operation", {"style": "document", "soapAction": target_namespace})
+    # 👇 Aquí la corrección importante
+    ET.SubElement(opb, f"{SOAP}operation", {
+        "style": "document",
+        "soapAction": f"{target_namespace}/{operation_name}"
+    })
+
     inp = ET.SubElement(opb, f"{WSDL}input")
     ET.SubElement(inp, f"{SOAP}body", {"use": "literal", "parts": input_msg})
+
     out = ET.SubElement(opb, f"{WSDL}output")
     ET.SubElement(out, f"{SOAP}body", {"use": "literal", "parts": output_msg})
     
     aplicar_indent_local(opb, nivel=2)
+
     # Reordenar antes de devolver
     root = reordenar_definitions(root)
     return ET.tostring(root, encoding="unicode")
@@ -532,31 +537,30 @@ def crear_wsdl_exp(service_name: str,
 
     return wsdl_str
 
-def obtener_namespace_y_binding(wsdl_input):
-    import xml.etree.ElementTree as ET
+def obtener_namespace_y_binding(wsdl_content: str) -> tuple[str, str]:
+    """
+    Extrae el targetNamespace y el nombre del binding de un WSDL.
 
-    # Si es ruta, abrimos el archivo
-    if isinstance(wsdl_input, str) and wsdl_input.endswith(".wsdl"):
-        with open(wsdl_input, "r", encoding="utf-8") as f:
-            xml_content = f.read()
-    else:
-        # Asumimos que ya es contenido XML
-        xml_content = wsdl_input
+    Args:
+        wsdl_content (str): Contenido del archivo WSDL como string.
 
-    # Parsear solo si es XML válido
-    try:
-        root = ET.fromstring(xml_content)
-    except ET.ParseError as e:
-        raise ValueError(f"❌ Error al parsear WSDL: {e}\nContenido recibido (primeros 500 chars):\n{xml_content[:500]}")
+    Returns:
+        tuple[str, str]: (targetNamespace, nombre_binding)
+    """
+    # Parsear el contenido del WSDL
+    root = ET.fromstring(wsdl_content)
 
-    # Aquí extraes namespace y binding
-    namespace = root.attrib.get("targetNamespace", "")
-    binding = None
-    for binding_elem in root.findall(".//{http://schemas.xmlsoap.org/wsdl/}binding"):
-        binding = binding_elem.attrib.get("name")
-        break
+    # Namespace WSDL
+    wsdl_ns = "{http://schemas.xmlsoap.org/wsdl/}"
 
-    return namespace, binding
+    # Obtener targetNamespace
+    target_namespace = root.attrib.get("targetNamespace", "")
+
+    # Buscar primer binding
+    binding = root.find(f"{wsdl_ns}binding")
+    binding_name = binding.attrib.get("name", "") if binding is not None else ""
+
+    return target_namespace, binding_name
 
 def quitar_extension(ruta: str) -> str:
     return str(Path(ruta).with_suffix(""))
@@ -2281,16 +2285,6 @@ def generar_proyecto():
                             st.session_state["output_xsd"],
                             st.session_state["xmlns"]
                         )
-                        
-                        st.success(f"✅ Archivos generados correctamente. {st.session_state['archivo_wsdl_exp']}")
-                        
-                        valor = st.session_state["archivo_wsdl_exp"]
-                        st.write("👉 Tipo real:", type(valor))
-
-                        if isinstance(valor, str):
-                            st.text(f"Preview contenido (500 chars): {valor[:500]}")
-                        else:
-                            st.write("Contenido no es str, es:", type(valor))
                         
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
                         
