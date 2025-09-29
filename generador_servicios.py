@@ -2288,11 +2288,12 @@ def generar_proyecto():
                         st.success(f"✅ Archivos generados correctamente. {st.session_state['archivo_wsdl_exp']}") 
                         valor = st.session_state["archivo_wsdl_exp"] 
                         st.write("👉 Tipo de archivo_wsdl_exp:", type(valor)) 
-                        if isinstance(valor, str): st.code(valor[:500], language="xml") # muestra los primeros 500 caracteres 
-                            elif isinstance(valor, bytes): 
-                                st.code(valor.decode("utf-8", errors="ignore")[:500], language="xml") 
-                            else: 
-                                st.write("Contenido no es str ni bytes, es:", type(valor)) st.write(valor)
+                        if isinstance(valor, str): 
+                            st.code(valor[:500], language="xml") # muestra los primeros 500 caracteres 
+                        elif isinstance(valor, bytes): 
+                            st.code(valor.decode("utf-8", errors="ignore")[:500], language="xml") 
+                        else: 
+                            st.write("Contenido no es str ni bytes, es:", type(valor)) st.write(valor)
                         
                         
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
