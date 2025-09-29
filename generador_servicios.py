@@ -532,29 +532,30 @@ def crear_wsdl_exp(service_name: str,
 
     return wsdl_str
 
-def obtener_namespace_y_binding(wsdl_content: str) -> tuple[str, str]:
+def obtener_namespace_y_binding(wsdl_input):
     """
     Extrae el targetNamespace y el nombre del binding de un WSDL.
+    Acepta string, bytes o un Element ya parseado.
     """
-    import xml.etree.ElementTree as ET
 
-    if not wsdl_content or not wsdl_content.strip():
-        raise ValueError("El contenido del WSDL está vacío o nulo")
+    # Caso 1: ya es un Element
+    if isinstance(wsdl_input, ET.Element):
+        root = wsdl_input
 
-    # Si ya es un objeto XML, convertirlo a string
-    if not isinstance(wsdl_content, str):
-        try:
-            wsdl_content = wsdl_content.decode("utf-8") if isinstance(wsdl_content, bytes) else str(wsdl_content)
-        except Exception:
-            raise ValueError("El contenido del WSDL no es un string válido")
+    # Caso 2: bytes → decodificar
+    elif isinstance(wsdl_input, bytes):
+        wsdl_input = wsdl_input.decode("utf-8", errors="ignore")
+        root = ET.fromstring(wsdl_input)
 
-    try:
-        root = ET.fromstring(wsdl_content)
-    except ET.ParseError as e:
-        raise ValueError(f"❌ Error al parsear el WSDL: {e}\nContenido recibido:\n{wsdl_content[:500]}...")
+    # Caso 3: string (XML plano)
+    elif isinstance(wsdl_input, str):
+        root = ET.fromstring(wsdl_input)
 
+    else:
+        raise ValueError(f"Tipo no soportado en obtener_namespace_y_binding: {type(wsdl_input)}")
+
+    # Extraer namespace y binding
     wsdl_ns = "{http://schemas.xmlsoap.org/wsdl/}"
-
     target_namespace = root.attrib.get("targetNamespace", "")
 
     binding = root.find(f"{wsdl_ns}binding")

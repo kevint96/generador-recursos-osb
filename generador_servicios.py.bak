@@ -2286,8 +2286,7 @@ def generar_proyecto():
                             st.session_state["xmlns"]
                         )
                         
-                        st.markdown(f"<h6 style='text-align: center;'>{st.session_state["archivo_wsdl_exp"]}</h6>", unsafe_allow_html=True)
-                        st.markdown(f"<h6 style='text-align: center;'>{st.session_state["archivo_wsdl_exp"][:300]}</h6>", unsafe_allow_html=True)
+                        st.success(f"✅ Archivos generados correctamente. {st.session_state['archivo_wsdl_exp']}")
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
                         
                         #st.code(st.session_state["namespace_wsdl_exp"], language="xml")
