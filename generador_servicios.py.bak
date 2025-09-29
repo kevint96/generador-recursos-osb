@@ -356,17 +356,13 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
                            operation_name, input_msg, output_msg, ns_elem_prefix):
     """
     Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
+    - Inserta <xsd:import> en un <xsd:schema> vacío, o crea uno nuevo si no hay.
+    - Registra mensajes, portType, binding y operación SOAP.
     """
     # Parsear el contenido ya con el namespace insertado
     tree = ET.ElementTree(ET.fromstring(wsdl_content))
     root = tree.getroot()
 
-    ns = {
-        'wsdl': 'http://schemas.xmlsoap.org/wsdl/',
-        'xs': 'http://www.w3.org/2001/XMLSchema',
-        'soap': 'http://schemas.xmlsoap.org/wsdl/soap/',
-    }
-    
     if not wsdl_content or "<definitions" not in wsdl_content:
         raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
 
@@ -380,17 +376,27 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     if types is None:
         types = ET.SubElement(root, f"{WSDL}types")
 
+    # Buscar un <xsd:schema> vacío (sin imports) para reutilizar
+    schema = None
+    for sch in types.findall(f"{XSD}schema"):
+        if not sch.findall(f"{XSD}import"):  # schema vacío
+            schema = sch
+            break
+
+    # Si no existe ninguno vacío, crear uno nuevo
+    if schema is None:
+        schema = ET.SubElement(types, f"{XSD}schema")
+
+    # Calcular la ruta relativa del XSD
     wsdl_dir = os.path.dirname(wsdl_path)
     rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/")
 
-    schema = ET.Element(f"{XSD}schema")
+    # Crear el import
     attribs = OrderedDict()
     attribs["schemaLocation"] = rel_path
     attribs["namespace"] = target_namespace
     ET.SubElement(schema, f"{XSD}import", attrib=attribs)
-    
     aplicar_indent_local(schema, nivel=2)
-    types.append(schema)
 
     # 2) Mensajes
     msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
@@ -414,8 +420,10 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     # 4) Binding
     binding = root.find(f"{WSDL}binding")
     if binding is None:
-        binding = ET.SubElement(root, f"{WSDL}binding", {"name": f"{operation_name}_Binding",
-                                                         "type": f"tns:{port_type.get('name')}"} )
+        binding = ET.SubElement(root, f"{WSDL}binding", {
+            "name": f"{operation_name}_Binding",
+            "type": f"tns:{port_type.get('name')}"
+        })
         ET.SubElement(binding, f"{SOAP}binding", {
             "style": "document",
             "transport": "http://schemas.xmlsoap.org/soap/http"
@@ -423,7 +431,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
 
     opb = ET.SubElement(binding, f"{WSDL}operation", {"name": operation_name})
     
-    # 👇 Aquí la corrección importante
+    # Operación SOAP
     ET.SubElement(opb, f"{SOAP}operation", {
         "style": "document",
         "soapAction": f"{target_namespace}/{operation_name}"
@@ -440,7 +448,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     # Reordenar antes de devolver
     root = reordenar_definitions(root)
     return ET.tostring(root, encoding="unicode")
-
+    
 def crear_wsdl_exp(service_name: str,
                     wsdl_path: str,
                     xsd_path: str,
