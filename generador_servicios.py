@@ -535,23 +535,28 @@ def crear_wsdl_exp(service_name: str,
 def obtener_namespace_y_binding(wsdl_content: str) -> tuple[str, str]:
     """
     Extrae el targetNamespace y el nombre del binding de un WSDL.
-
-    Args:
-        wsdl_content (str): Contenido del archivo WSDL como string.
-
-    Returns:
-        tuple[str, str]: (targetNamespace, nombre_binding)
     """
-    # Parsear el contenido del WSDL
-    root = ET.fromstring(wsdl_content)
+    import xml.etree.ElementTree as ET
 
-    # Namespace WSDL
+    if not wsdl_content or not wsdl_content.strip():
+        raise ValueError("El contenido del WSDL está vacío o nulo")
+
+    # Si ya es un objeto XML, convertirlo a string
+    if not isinstance(wsdl_content, str):
+        try:
+            wsdl_content = wsdl_content.decode("utf-8") if isinstance(wsdl_content, bytes) else str(wsdl_content)
+        except Exception:
+            raise ValueError("El contenido del WSDL no es un string válido")
+
+    try:
+        root = ET.fromstring(wsdl_content)
+    except ET.ParseError as e:
+        raise ValueError(f"❌ Error al parsear el WSDL: {e}\nContenido recibido:\n{wsdl_content[:500]}...")
+
     wsdl_ns = "{http://schemas.xmlsoap.org/wsdl/}"
 
-    # Obtener targetNamespace
     target_namespace = root.attrib.get("targetNamespace", "")
 
-    # Buscar primer binding
     binding = root.find(f"{wsdl_ns}binding")
     binding_name = binding.attrib.get("name", "") if binding is not None else ""
 
