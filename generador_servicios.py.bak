@@ -450,29 +450,33 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
 def corregir_wsdl_imports(wsdl_content: str) -> str:
     """
     Corrige la sección <types> en un WSDL malformado,
-    envolviendo cada <xsd:import> dentro de un bloque <xsd:schema>.
+    envolviendo CADA <xsd:import> en su propio bloque <xsd:schema>.
     """
     import re
 
-    # Regex para capturar todos los <xsd:import ... />
+    # Captura todos los <xsd:import ... />
     patron_imports = re.findall(r'(<xsd:import[^>]+/>)', wsdl_content)
 
     if not patron_imports:
         return wsdl_content  # No hay nada que corregir
 
-    # Construimos un bloque <types> limpio con imports bien formateados
+    # Construimos múltiples bloques <xsd:schema> (uno por cada import)
     bloques = []
     for imp in patron_imports:
-        bloques.append(f"<xsd:schema>\n    {imp}\n</xsd:schema>")
+        bloques.append(
+            "  <xsd:schema>\n"
+            f"    {imp}\n"
+            "  </xsd:schema>"
+        )
 
     bloque_types = "<types>\n" + "\n".join(bloques) + "\n</types>"
 
-    # Reemplazar la sección <types> original (aunque esté rota) por la nueva
+    # Reemplazar cualquier <types> roto o malformado
     wsdl_content = re.sub(
         r"<types>.*?</types>", bloque_types, wsdl_content, flags=re.DOTALL
     )
 
-    return wsdl_content    
+    return wsdl_content
     
 def crear_wsdl_exp(service_name: str,
                     wsdl_path: str,
