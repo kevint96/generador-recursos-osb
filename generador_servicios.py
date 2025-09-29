@@ -353,146 +353,60 @@ def aplicar_indent_local(elem, nivel=1, espacio="  "):
     if not elem.tail or not elem.tail.strip():
         elem.tail = "\n" + ((nivel - 1) * espacio)
 
-def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
-                           operation_name, input_msg, output_msg, ns_elem_prefix):
+def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_paths, operation_name, input_msg, output_msg, ns_elem_prefix):
     """
-    Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
-    - Asegura que cada <xsd:import/> quede dentro de su propio <xsd:schema>.
-    - Inserta un nuevo <xsd:schema><xsd:import .../></xsd:schema> al final de <types>
-    - Añade mensajes, portType y binding/operation como antes.
+    Modifica un WSDL agregando la operación, mensajes y bindings.
+    Además, asegura que cada <xsd:import> quede dentro de un <xsd:schema> independiente.
     """
-    # Namespaces locales (no depender de variables globales)
-    WSDL_URI = "http://schemas.xmlsoap.org/wsdl/"
-    XSD_URI  = "http://www.w3.org/2001/XMLSchema"
-    SOAP11_URI = "http://schemas.xmlsoap.org/wsdl/soap/"
 
-    # Registrar prefijos para que la salida mantenga xsd:, soap:, etc.
-    ET.register_namespace('xsd', XSD_URI)
-    ET.register_namespace('soap', SOAP11_URI)
+    # Parsear el contenido del WSDL
+    root = ET.fromstring(wsdl_content)
 
-    # Intentar parsear; si falla, aplicar corrección por regex y reintentar.
-    try:
-        root = ET.fromstring(wsdl_content)
-    except ET.ParseError:
-        wsdl_content_fixed = corregir_wsdl_imports(wsdl_content)
-        root = ET.fromstring(wsdl_content_fixed)
+    # Buscar o crear <types>
+    types_elem = root.find("{http://schemas.xmlsoap.org/wsdl/}types")
+    if types_elem is None:
+        types_elem = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}types")
 
-    # Tags fully-qualified
-    types_tag   = f"{{{WSDL_URI}}}types"
-    schema_tag  = f"{{{XSD_URI}}}schema"
-    import_tag  = f"{{{XSD_URI}}}import"
-    message_tag = f"{{{WSDL_URI}}}message"
-    part_tag    = f"{{{WSDL_URI}}}part"
-    porttype_tag= f"{{{WSDL_URI}}}portType"
-    operation_tag = f"{{{WSDL_URI}}}operation"
-    input_tag   = f"{{{WSDL_URI}}}input"
-    output_tag  = f"{{{WSDL_URI}}}output"
-    binding_tag = f"{{{WSDL_URI}}}binding"
-    soap_binding_tag = f"{{{SOAP11_URI}}}binding"
-    soap_operation_tag = f"{{{SOAP11_URI}}}operation"
-    soap_body_tag = f"{{{SOAP11_URI}}}body"
+    # --- 🔥 CREAR UN <xsd:schema> POR CADA IMPORT ---
+    for xsd_path, namespace in xsd_paths:
+        schema_elem = ET.Element("{http://www.w3.org/2001/XMLSchema}schema")
+        import_elem = ET.Element("{http://www.w3.org/2001/XMLSchema}import", {
+            "schemaLocation": xsd_path,
+            "namespace": namespace
+        })
+        schema_elem.append(import_elem)
+        types_elem.append(schema_elem)
 
-    # Encontrar <types>
-    types_elem = root.find(types_tag)
+    # Crear mensajes
+    msg_input = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}message", {"name": f"{operation_name}Request"})
+    ET.SubElement(msg_input, "{http://schemas.xmlsoap.org/wsdl/}part", {"name": "parameters", "element": f"{ns_elem_prefix}:{operation_name}Request"})
 
-    if types_elem is not None:
-        # Reconstruir <types> de forma segura: iterar sus hijos y
-        # garantizar que cada <xsd:import> quede en su propio <xsd:schema>.
-        nuevo_types = ET.Element(types_tag)
+    msg_output = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}message", {"name": f"{operation_name}Response"})
+    ET.SubElement(msg_output, "{http://schemas.xmlsoap.org/wsdl/}part", {"name": "parameters", "element": f"{ns_elem_prefix}:{operation_name}Response"})
 
-        for child in list(types_elem):
-            if child.tag == schema_tag:
-                # Dentro de este schema, obtener imports
-                imports = [c for c in list(child) if c.tag == import_tag]
-                # Si tiene imports, crear un schema por cada import
-                if imports:
-                    for imp in imports:
-                        nschema = ET.Element(schema_tag)
-                        nschema.append(deepcopy(imp))
-                        nuevo_types.append(nschema)
-                else:
-                    # No son imports (schema con atributos especiales), conservar tal cual
-                    nuevo_types.append(deepcopy(child))
-            elif child.tag == import_tag:
-                # import directo bajo <types> -> envolverlo en <xsd:schema>
-                nschema = ET.Element(schema_tag)
-                nschema.append(deepcopy(child))
-                nuevo_types.append(nschema)
-            else:
-                # cualquier otro nodo bajo <types> (ej: comments u otros) -> conservar
-                nuevo_types.append(deepcopy(child))
-
-        # Reemplazar types_elem por nuevo_types en la posición original
-        children_root = list(root)
-        for idx, el in enumerate(children_root):
-            if el is types_elem:
-                root.remove(el)
-                root.insert(idx, nuevo_types)
-                break
-        types_elem = root.find(types_tag)  # refrescar referencia
-    else:
-        # Si no existía <types>, crear uno vacío
-        types_elem = ET.SubElement(root, types_tag)
-
-    # Agregar el nuevo xsd:import solicitado (al final de types) dentro de su propio <xsd:schema>
-    wsdl_dir = os.path.dirname(wsdl_path) if wsdl_path else ""
-    rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/") if xsd_path else xsd_path
-
-    nuevo_schema = ET.Element(schema_tag)
-    attribs = OrderedDict()
-    attribs["schemaLocation"] = rel_path
-    attribs["namespace"] = target_namespace
-    ET.SubElement(nuevo_schema, import_tag, attrib=attribs)
-    aplicar_indent_local(nuevo_schema, nivel=2)
-    types_elem.append(nuevo_schema)
-
-    # ------------- Mensajes -------------
-    msg_in  = ET.SubElement(root, message_tag, {"name": input_msg})
-    ET.SubElement(msg_in, part_tag, {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
-    aplicar_indent_local(msg_in, nivel=2)
-
-    msg_out = ET.SubElement(root, message_tag, {"name": output_msg})
-    ET.SubElement(msg_out, part_tag, {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
-    aplicar_indent_local(msg_out, nivel=2)
-
-    # ------------- PortType -------------
-    port_type = root.find(porttype_tag)
+    # Crear portType si no existe
+    port_type = root.find("{http://schemas.xmlsoap.org/wsdl/}portType")
     if port_type is None:
-        port_type = ET.SubElement(root, porttype_tag, {"name": f"{operation_name}_Port"})
-    op = ET.SubElement(port_type, operation_tag, {"name": operation_name})
-    ET.SubElement(op, input_tag, {"message": f"tns:{input_msg}"})
-    ET.SubElement(op, output_tag, {"message": f"tns:{output_msg}"})
-    aplicar_indent_local(op, nivel=2)
+        port_type = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}portType", {"name": f"{operation_name}PortType"})
 
-    # ------------- Binding -------------
-    binding = root.find(binding_tag)
+    ET.SubElement(port_type, "{http://schemas.xmlsoap.org/wsdl/}operation", {"name": operation_name})
+    op_elem = port_type.find(f"{{http://schemas.xmlsoap.org/wsdl/}}operation[@name='{operation_name}']")
+    ET.SubElement(op_elem, "{http://schemas.xmlsoap.org/wsdl/}input", {"message": f"tns:{operation_name}Request"})
+    ET.SubElement(op_elem, "{http://schemas.xmlsoap.org/wsdl/}output", {"message": f"tns:{operation_name}Response"})
+
+    # Crear binding si no existe
+    binding = root.find("{http://schemas.xmlsoap.org/wsdl/}binding")
     if binding is None:
-        binding = ET.SubElement(root, binding_tag, {
-            "name": f"{operation_name}_Binding",
-            "type": f"tns:{port_type.get('name')}"
+        binding = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}binding", {
+            "name": f"{operation_name}Binding",
+            "type": f"tns:{operation_name}PortType"
         })
-        ET.SubElement(binding, soap_binding_tag, {
-            "style": "document",
-            "transport": "http://schemas.xmlsoap.org/soap/http"
+        ET.SubElement(binding, "{http://schemas.xmlsoap.org/wsdl/}binding", {
+            "transport": "http://schemas.xmlsoap.org/soap/http",
+            "style": "document"
         })
 
-    opb = ET.SubElement(binding, operation_tag, {"name": operation_name})
-    ET.SubElement(opb, soap_operation_tag, {
-        "style": "document",
-        "soapAction": f"{target_namespace}/{operation_name}"
-    })
-    inp = ET.SubElement(opb, input_tag)
-    ET.SubElement(inp, soap_body_tag, {"use": "literal", "parts": input_msg})
-    out = ET.SubElement(opb, output_tag)
-    ET.SubElement(out, soap_body_tag, {"use": "literal", "parts": output_msg})
-    aplicar_indent_local(opb, nivel=2)
-
-    # Reordenar según tu función (si la tienes definida)
-    try:
-        root = reordenar_definitions(root)
-    except Exception:
-        # Si no existe o falla, no romper; devolvemos árbol tal cual
-        pass
+    ET.SubElement(binding, "{http://schemas.xmlsoap.org/wsdl/}operation", {"name": operation_name})
 
     return ET.tostring(root, encoding="unicode")
 
