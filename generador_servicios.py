@@ -34,7 +34,6 @@ import textwrap
 from datetime import datetime
 import io
 from xml.dom import minidom
-from copy import deepcopy
 # -------------------------------
 # Funciones para generar archivos
 # -------------------------------
@@ -353,85 +352,90 @@ def aplicar_indent_local(elem, nivel=1, espacio="  "):
     if not elem.tail or not elem.tail.strip():
         elem.tail = "\n" + ((nivel - 1) * espacio)
 
-def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_paths, operation_name, input_msg, output_msg, ns_elem_prefix):
-    """
-    Modifica un WSDL agregando la operación, mensajes y bindings.
-    Además, asegura que cada <xsd:import> quede dentro de un <xsd:schema> independiente.
-    """
+def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
+                           operation_name, input_msg, output_msg, ns_elem_prefix):
 
-    # Parsear el contenido del WSDL
+    """
+    Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
+    """
+    # Parsear el contenido ya con el namespace insertado
+    tree = ET.ElementTree(ET.fromstring(wsdl_content))
+    root = tree.getroot()
+
+    ns = {
+        'wsdl': 'http://schemas.xmlsoap.org/wsdl/',
+        'xs': 'http://www.w3.org/2001/XMLSchema',
+        'soap': 'http://schemas.xmlsoap.org/wsdl/soap/',
+    }
+    
+    if not wsdl_content or "<definitions" not in wsdl_content:
+        raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
+
+    # --- Parsear
     root = ET.fromstring(wsdl_content)
 
-    # Buscar o crear <types>
-    types_elem = root.find("{http://schemas.xmlsoap.org/wsdl/}types")
-    if types_elem is None:
-        types_elem = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}types")
+    # Helpers de QName
+    WSDL = "{%s}" % WSDL_URI
+    XSD  = "{%s}" % XSD_URI
+    SOAP = "{%s}" % SOAP11_URI
 
-    # --- 🔥 CREAR UN <xsd:schema> POR CADA IMPORT ---
-    for xsd_path, namespace in xsd_paths:
-        schema_elem = ET.Element("{http://www.w3.org/2001/XMLSchema}schema")
-        import_elem = ET.Element("{http://www.w3.org/2001/XMLSchema}import", {
-            "schemaLocation": xsd_path,
-            "namespace": namespace
-        })
-        schema_elem.append(import_elem)
-        types_elem.append(schema_elem)
+    # 1) Agregar import al FINAL de <types>
+    types = root.find(f"{WSDL}types")
+    if types is None:
+        types = ET.SubElement(root, f"{WSDL}types")
 
-    # Crear mensajes
-    msg_input = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}message", {"name": f"{operation_name}Request"})
-    ET.SubElement(msg_input, "{http://schemas.xmlsoap.org/wsdl/}part", {"name": "parameters", "element": f"{ns_elem_prefix}:{operation_name}Request"})
+    wsdl_dir = os.path.dirname(wsdl_path)
+    rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/")
 
-    msg_output = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}message", {"name": f"{operation_name}Response"})
-    ET.SubElement(msg_output, "{http://schemas.xmlsoap.org/wsdl/}part", {"name": "parameters", "element": f"{ns_elem_prefix}:{operation_name}Response"})
+    schema = ET.Element(f"{XSD}schema")
+    attribs = OrderedDict()
+    attribs["schemaLocation"] = rel_path
+    attribs["namespace"] = target_namespace
+    ET.SubElement(schema, f"{XSD}import", attrib=attribs)
+    
+    # 👇 Aplicar indentación SOLO a este bloque
+    aplicar_indent_local(schema, nivel=2)
+    types.append(schema)
 
-    # Crear portType si no existe
-    port_type = root.find("{http://schemas.xmlsoap.org/wsdl/}portType")
+    # 4) Mensajes
+    msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
+    ET.SubElement(msg_in, f"{WSDL}part", {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
+    aplicar_indent_local(msg_in, nivel=2)
+    
+    msg_out = ET.SubElement(root, f"{WSDL}message", {"name": output_msg})
+    ET.SubElement(msg_out, f"{WSDL}part", {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
+    aplicar_indent_local(msg_out, nivel=2)
+    
+    # 5) PortType
+    port_type = root.find(f"{WSDL}portType")
     if port_type is None:
-        port_type = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}portType", {"name": f"{operation_name}PortType"})
+        port_type = ET.SubElement(root, f"{WSDL}portType", {"name": f"{operation_name}_Port"})
+    op = ET.SubElement(port_type, f"{WSDL}operation", {"name": operation_name})
+    
+    ET.SubElement(op, f"{WSDL}input",  {"message": f"tns:{input_msg}"})
+    ET.SubElement(op, f"{WSDL}output", {"message": f"tns:{output_msg}"})
+    aplicar_indent_local(op, nivel=2)
 
-    ET.SubElement(port_type, "{http://schemas.xmlsoap.org/wsdl/}operation", {"name": operation_name})
-    op_elem = port_type.find(f"{{http://schemas.xmlsoap.org/wsdl/}}operation[@name='{operation_name}']")
-    ET.SubElement(op_elem, "{http://schemas.xmlsoap.org/wsdl/}input", {"message": f"tns:{operation_name}Request"})
-    ET.SubElement(op_elem, "{http://schemas.xmlsoap.org/wsdl/}output", {"message": f"tns:{operation_name}Response"})
-
-    # Crear binding si no existe
-    binding = root.find("{http://schemas.xmlsoap.org/wsdl/}binding")
+    # 6) Binding
+    binding = root.find(f"{WSDL}binding")
     if binding is None:
-        binding = ET.SubElement(root, "{http://schemas.xmlsoap.org/wsdl/}binding", {
-            "name": f"{operation_name}Binding",
-            "type": f"tns:{operation_name}PortType"
-        })
-        ET.SubElement(binding, "{http://schemas.xmlsoap.org/wsdl/}binding", {
-            "transport": "http://schemas.xmlsoap.org/soap/http",
-            "style": "document"
-        })
-
-    ET.SubElement(binding, "{http://schemas.xmlsoap.org/wsdl/}operation", {"name": operation_name})
-
+        binding = ET.SubElement(root, f"{WSDL}binding", {"name": f"{operation_name}_Binding",
+                                                         "type": f"tns:{port_type.get('name')}"})
+        ET.SubElement(binding, f"{SOAP}binding", {"style": "document",
+                                                  "transport": "http://schemas.xmlsoap.org/soap/http"})
+    opb = ET.SubElement(binding, f"{WSDL}operation", {"name": operation_name})
+    
+    ET.SubElement(opb, f"{SOAP}operation", {"style": "document", "soapAction": target_namespace})
+    inp = ET.SubElement(opb, f"{WSDL}input")
+    ET.SubElement(inp, f"{SOAP}body", {"use": "literal", "parts": input_msg})
+    out = ET.SubElement(opb, f"{WSDL}output")
+    ET.SubElement(out, f"{SOAP}body", {"use": "literal", "parts": output_msg})
+    
+    aplicar_indent_local(opb, nivel=2)
+    # Reordenar antes de devolver
+    root = reordenar_definitions(root)
     return ET.tostring(root, encoding="unicode")
 
-def corregir_wsdl_imports(wsdl_content: str) -> str:
-    """
-    Fallback: si el WSDL está tan malformado que no parsea,
-    envuelve CADA <xsd:import .../> en su propio <xsd:schema>.
-    (Usado sólo como último recurso para poder parsear.)
-    """
-    # Si no hay imports, devolvemos tal cual
-    imports = re.findall(r'(<xsd:import[^>]+/>)', wsdl_content)
-    if not imports:
-        return wsdl_content
-
-    bloques = []
-    for imp in imports:
-        bloques.append("  <xsd:schema>\n    " + imp + "\n  </xsd:schema>")
-
-    nuevo_types = "<types>\n" + "\n".join(bloques) + "\n</types>"
-
-    # Reemplazamos el bloque <types>... </types> (aunque esté roto)
-    wsdl_content = re.sub(r"<types>.*?</types>", nuevo_types, wsdl_content, flags=re.DOTALL)
-
-    return wsdl_content
-    
 def crear_wsdl_exp(service_name: str,
                     wsdl_path: str,
                     xsd_path: str,
@@ -2276,11 +2280,6 @@ def generar_proyecto():
                             st.session_state["output_xsd"],
                             st.session_state["xmlns"]
                         )
-                        st.success(f"✅ Archivos generados correctamente. {st.session_state['archivo_wsdl_exp']}") 
-                        valor = st.session_state["archivo_wsdl_exp"] 
-                        
-                        st.write(valor)
-                        
                         
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
                         
