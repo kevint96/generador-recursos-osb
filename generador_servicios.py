@@ -34,6 +34,7 @@ import textwrap
 from datetime import datetime
 import io
 from xml.dom import minidom
+from xml.parsers.expat import ExpatError
 # -------------------------------
 # Funciones para generar archivos
 # -------------------------------

@@ -742,8 +742,21 @@ def crear_pipeline_exp(pipeline_name: str,
     return xml_content
 
 def prettify(xml_string: str) -> str:
-    parsed = minidom.parseString(xml_string)
-    return parsed.toprettyxml(indent="  ", encoding="utf-8").decode("utf-8")
+    try:
+        parsed = minidom.parseString(xml_string)
+        return parsed.toprettyxml(indent="  ", encoding="utf-8").decode("utf-8")
+    except ExpatError as e:
+        # Log en consola
+        print("❌ Error en prettify:", e)
+        print("XML recibido:\n", xml_string)
+
+        # Mostrar en la app para depurar
+        st.error(f"❌ Error al formatear XML: {e}")
+        with st.expander("📄 XML crudo con error", expanded=False):
+            st.code(xml_string, language="xml")
+
+        # Devuelvo el XML tal cual, sin formatear, para no romper el flujo
+        return xml_string
 
 def pretty_print_xml(xml_str):
     # Parsear el XML
