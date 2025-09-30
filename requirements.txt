@@ -3,4 +3,4 @@ python-docx
 gspread
 openpyxl
 pandas
-lxml>=4.9.2
+lxml
