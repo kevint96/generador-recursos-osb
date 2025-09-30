@@ -2281,6 +2281,7 @@ def generar_proyecto():
                             st.session_state["xmlns"]
                         )
                         
+                        st.code(st.session_state["archivo_wsdl_exp"], language="xml")
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
                         
                         #st.code(st.session_state["namespace_wsdl_exp"], language="xml")
