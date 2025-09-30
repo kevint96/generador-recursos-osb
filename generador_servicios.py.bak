@@ -107,26 +107,30 @@ def to_upper_snake_case(name: str) -> str:
     
 def generar_xmlns(nombre_operacion: str) -> str:
     """
-    Regla:
-      - El nombre viene en camelCase (empieza en minúscula; cada nueva palabra en mayúscula).
-      - De cada palabra tomar 4 letras si la palabra tiene 5 o más letras; si no, tomar hasta 3.
-      - Anteponer 'ser'.
-
-    Ejemplo:
-      aceptarOrdenSistemaExterno -> seracepordesistexte
+    Convierte un nombre en camelCase a un identificador con la regla:
+    - Tomar las primeras 3 letras de cada palabra.
+    - Evitar letras consecutivas repetidas.
+    - Anteponer 'ser'.
     """
     s = nombre_operacion.strip()
-
-    # Divide en palabras: secuencia minúscula, o Mayúscula+minúsculas, o ACRÓNIMO en mayúsculas.
+    
+    # Divide en palabras: minúsculas, Mayúscula+minúsculas, o acrónimos
     tokens = re.findall(r'[a-z]+|[A-Z][a-z]+|[A-Z]+(?=[A-Z][a-z]|$)', s)
 
     parts = []
     for t in tokens:
         w = t.lower()
-        n = 4 if len(w) >= 5 else min(3, len(w))
-        parts.append(w[:n])
+        parts.append(w[:3])  # Tomar siempre las primeras 3 letras
 
-    return "ser" + "".join(parts)
+    combined = "".join(parts)
+
+    # Eliminar letras consecutivas repetidas
+    result = [combined[0]] if combined else []
+    for c in combined[1:]:
+        if c != result[-1]:
+            result.append(c)
+
+    return "ser" + "".join(result)
 
 def generate_xsd(nombre_operacion, complexType, xmlns):
     return f'''<xs:schema targetNamespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/{nombre_operacion}/v1.0" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:{xmlns}="http://xmlns.bancocajasocial.com/co/schemas/operacion/{nombre_operacion}/v1.0" xmlns:entcab="http://xmlns.bancocajasocial.com/co/comunes/schema/Cabeceras/V1.0">
