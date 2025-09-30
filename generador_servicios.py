@@ -265,6 +265,15 @@ def fusionar_definitions(original_wsdl: str, nuevo_wsdl: str) -> str:
         return nuevo_wsdl.replace(match_new.group(1), match_orig.group(1), 1)
     return nuevo_wsdl
 
+def normalizar_soap_body(wsdl_content: str) -> str:
+    """
+    Reemplaza cualquier <soap12:body ...> por <soap:body ...>
+    y </soap12:body> por </soap:body>.
+    """
+    wsdl_content = wsdl_content.replace("<soap12:body", "<soap:body")
+    wsdl_content = wsdl_content.replace("</soap12:body>", "</soap:body>")
+    return wsdl_content
+
 def procesar_wsdl(wsdl_content: str, wsdl_path: str,
                   target_namespace: str, xsd_path: str,
                   operation_name: str, input_msg: str, output_msg: str,
@@ -283,6 +292,9 @@ def procesar_wsdl(wsdl_content: str, wsdl_path: str,
         operation_name, input_msg, output_msg, ns_elem_prefix
     )
     wsdl_content_final = fusionar_definitions(wsdl_content_mod, wsdl_content_final)
+    
+    # Normalizar soap12 -> soap
+    wsdl_content_final = normalizar_soap_body(wsdl_content_final)
 
     return wsdl_content_final
 
