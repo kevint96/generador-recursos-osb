@@ -448,7 +448,12 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     aplicar_indent_local(opb, nivel=2)
     # Reordenar antes de devolver
     root = reordenar_definitions(root)
-    return ET.tostring(root, encoding="unicode")
+    wsdl_str = ET.tostring(root, encoding="unicode")
+    
+    # --- REEMPLAZO de nsX: por soap12: ---
+    wsdl_str = re.sub(r'\bns\d+:', 'soap12:', wsdl_str)
+
+    return wsdl_str
     
 def crear_wsdl_exp(service_name: str,
                     wsdl_path: str,
