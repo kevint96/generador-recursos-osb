@@ -2314,19 +2314,19 @@ def generar_proyecto():
                             st.session_state["xmlns"]
                         )
                         
-                        st.code(st.session_state["archivo_wsdl_exp"], language="xml")
-                        xml_debug = st.session_state["archivo_wsdl_exp"].strip()
-                        # Quitar BOM si existe
-                        if xml_debug.startswith("\ufeff"):
-                            xml_debug = xml_debug.encode('utf-8').decode('utf-8-sig')
+                        # st.code(st.session_state["archivo_wsdl_exp"], language="xml")
+                        # xml_debug = st.session_state["archivo_wsdl_exp"].strip()
+                        # # Quitar BOM si existe
+                        # if xml_debug.startswith("\ufeff"):
+                            # xml_debug = xml_debug.encode('utf-8').decode('utf-8-sig')
 
-                        try:
-                            ET.fromstring(xml_debug)
-                            st.success("XML parsea correctamente")
-                        except ET.ParseError as e:
-                            st.error(f"XML inválido: {e}")
-                            with st.expander("Ver XML problemático", expanded=True):
-                                st.code(xml_debug, language="xml")
+                        # try:
+                            # ET.fromstring(xml_debug)
+                            # st.success("XML parsea correctamente")
+                        # except ET.ParseError as e:
+                            # st.error(f"XML inválido: {e}")
+                            # with st.expander("Ver XML problemático", expanded=True):
+                                # st.code(xml_debug, language="xml")
                         
                         
                         st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
