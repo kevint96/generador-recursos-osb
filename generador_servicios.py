@@ -425,16 +425,25 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     binding = root.find(f"{WSDL}binding")
     if binding is None:
         binding = ET.SubElement(root, f"{WSDL}binding", {"name": f"{operation_name}_Binding",
-                                                         "type": f"tns:{port_type.get('name')}"})
+                                                         "type": f"tns:{port_type.get('name')}"} )
         ET.SubElement(binding, f"{SOAP}binding", {"style": "document",
                                                   "transport": "http://schemas.xmlsoap.org/soap/http"})
+
     opb = ET.SubElement(binding, f"{WSDL}operation", {"name": operation_name})
-    
     ET.SubElement(opb, f"{SOAP}operation", {"style": "document", "soapAction": target_namespace})
     inp = ET.SubElement(opb, f"{WSDL}input")
-    ET.SubElement(inp, f"{SOAP}body", {"use": "literal", "parts": input_msg})
     out = ET.SubElement(opb, f"{WSDL}output")
-    ET.SubElement(out, f"{SOAP}body", {"use": "literal", "parts": output_msg})
+
+    # Detectar el prefijo correcto para <body>
+    # Buscamos un <body> existente en otro binding para usar el mismo prefijo
+    existing_body = root.find(".//{http://schemas.xmlsoap.org/wsdl/soap/}body")
+    if existing_body is not None:
+        body_tag = existing_body.tag  # Esto conserva el namespace y prefijo original
+    else:
+        body_tag = f"{SOAP}body"
+
+    ET.SubElement(inp, body_tag, {"use": "literal", "parts": input_msg})
+    ET.SubElement(out, body_tag, {"use": "literal", "parts": output_msg})
     
     aplicar_indent_local(opb, nivel=2)
     # Reordenar antes de devolver
