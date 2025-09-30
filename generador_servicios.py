@@ -1720,8 +1720,9 @@ def crear_pipeline_abc(wsdl_ref: str, binding_wsdl: str, namespace_wsdl: str, op
     return pipeline_xml
 
 def generar_nombrado_abc(nombre, tipo="proxy", version="V1.0"):
+    import re
     # 1. Convertir CamelCase → SNAKE_CASE
-    snake = re.sub(r'(?<!^)(?=[A-Z])', '_', nombre).upper()
+    snake = re.sub(r'(?<!^)(?=[A-Z])', '_', nombre).upper().strip()
     extension = ""
     
     # 2. Prefijo según tipo
@@ -1737,7 +1738,7 @@ def generar_nombrado_abc(nombre, tipo="proxy", version="V1.0"):
     elif tipo.lower() == "nombre":
         prefijo = ""
     else:
-        raise ValueError("Tipo no reconocido. Usa 'proxy' o 'pipeline'.")
+        raise ValueError("Tipo no reconocido. Usa 'proxy', 'pipeline', 'wsdl' o 'nombre'.")
         
     return f"{prefijo}{snake}DA{version}{extension}"
 

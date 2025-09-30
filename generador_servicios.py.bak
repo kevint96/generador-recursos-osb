@@ -34,6 +34,7 @@ import textwrap
 from datetime import datetime
 import io
 from xml.dom import minidom
+from xml.parsers.expat import ExpatError
 # -------------------------------
 # Funciones para generar archivos
 # -------------------------------
@@ -1738,7 +1739,7 @@ def generar_nombrado_abc(nombre, tipo="proxy", version="V1.0"):
     else:
         raise ValueError("Tipo no reconocido. Usa 'proxy' o 'pipeline'.")
         
-    return f"{prefijo}{snake}DA{version}{extension}"
+    return f"{prefijo}{snake}_DA{version}{extension}"
 
 def generar_nombrado_exp(nombre, tipo="proxy"):
     # 1. Convertir CamelCase → SNAKE_CASE
