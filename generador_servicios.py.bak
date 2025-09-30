@@ -2832,10 +2832,15 @@ def main():
             ),
             key="version_proxy_input"
         )
-        operation_name = st.text_input("Nombre de la operación", "")
+        # Usamos una clave para el input
+        operation_name = st.text_input("Nombre de la operación", key="operation_name_input")
 
-        # Siempre limpiar espacios en blanco antes de guardarlo
-        st.session_state["operation_name"] = operation_name.strip()
+        # Siempre mantener limpio el valor en session_state
+        st.session_state["operation_name"] = st.session_state["operation_name_input"].strip()
+
+        # 🔹 Si el usuario puso espacios, los quitamos también en el input
+        if st.session_state["operation_name_input"] != st.session_state["operation_name"]:
+            st.session_state["operation_name_input"] = st.session_state["operation_name"]
         
         if not st.session_state["operation_name"]:
             st.warning("⚠ Digita el nombre de la operación.")
