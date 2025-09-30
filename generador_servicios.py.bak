@@ -389,12 +389,14 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     if types is None:
         types = ET.SubElement(root, f"{WSDL}types")
 
-    wsdl_dir = os.path.dirname(wsdl_path)
-    rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/")
+    # Normalizar la ruta del XSD para WSDL
+    wsdl_dir = Path(wsdl_path).parent
+    rel_path = Path(xsd_path).resolve().relative_to(wsdl_dir.resolve())
+    rel_path_str = str(rel_path).replace("\\", "/")
 
     schema = ET.Element(f"{XSD}schema")
     attribs = OrderedDict()
-    attribs["schemaLocation"] = rel_path
+    attribs["schemaLocation"] = rel_path_str
     attribs["namespace"] = target_namespace
     ET.SubElement(schema, f"{XSD}import", attrib=attribs)
     
@@ -402,7 +404,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     aplicar_indent_local(schema, nivel=2)
     types.append(schema)
 
-    # 4) Mensajes
+    # 2) Mensajes
     msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
     ET.SubElement(msg_in, f"{WSDL}part", {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
     aplicar_indent_local(msg_in, nivel=2)
@@ -411,7 +413,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     ET.SubElement(msg_out, f"{WSDL}part", {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
     aplicar_indent_local(msg_out, nivel=2)
     
-    # 5) PortType
+    # 3) PortType
     port_type = root.find(f"{WSDL}portType")
     if port_type is None:
         port_type = ET.SubElement(root, f"{WSDL}portType", {"name": f"{operation_name}_Port"})
@@ -421,7 +423,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     ET.SubElement(op, f"{WSDL}output", {"message": f"tns:{output_msg}"})
     aplicar_indent_local(op, nivel=2)
 
-    # 6) Binding
+    # 4) Binding
     binding = root.find(f"{WSDL}binding")
     if binding is None:
         binding = ET.SubElement(root, f"{WSDL}binding", {"name": f"{operation_name}_Binding",

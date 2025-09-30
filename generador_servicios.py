@@ -389,10 +389,8 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     if types is None:
         types = ET.SubElement(root, f"{WSDL}types")
 
-    # Normalizar la ruta del XSD para WSDL
-    wsdl_dir = Path(wsdl_path).parent
-    rel_path = Path(xsd_path).resolve().relative_to(wsdl_dir.resolve())
-    rel_path_str = str(rel_path).replace("\\", "/")
+    wsdl_dir = os.path.dirname(wsdl_path)
+    rel_path_str = os.path.relpath(xsd_path, wsdl_dir).replace("\\", "/")
 
     schema = ET.Element(f"{XSD}schema")
     attribs = OrderedDict()
