@@ -24,7 +24,7 @@ import base64
 import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-from lxml import etree
+from lxml import etree as ET
 import re
 from datetime import date
 from collections import OrderedDict

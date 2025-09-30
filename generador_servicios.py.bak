@@ -359,89 +359,90 @@ def aplicar_indent_local(elem, nivel=1, espacio="  "):
 
 def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
                            operation_name, input_msg, output_msg, ns_elem_prefix):
-    """
-    Agrega una operación nueva al WSDL sin modificar los prefijos existentes.
-    Solo las operaciones nuevas usarán 'soap:body'.
-    """
 
-    # Parseamos solo para encontrar dónde insertar
-    root = ET.fromstring(wsdl_content)
+    """
+    Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
+    Mantiene prefijos existentes, especialmente soap12.
+    """
+    parser = ET.XMLParser(remove_blank_text=True)
+    root = ET.fromstring(wsdl_content, parser)
+
+    nsmap_global = root.nsmap.copy()
+
+    # Helpers de QName
     WSDL = "{%s}" % WSDL_URI
-    SOAP = "{%s}" % SOAP11_URI
     XSD  = "{%s}" % XSD_URI
 
-    # --- Agregar import al FINAL de <types>
+    # --- 1) Agregar import al FINAL de <types>
     types = root.find(f"{WSDL}types")
     if types is None:
-        types = ET.Element(f"{WSDL}types")
+        types = ET.SubElement(root, f"{WSDL}types")
 
     wsdl_dir = os.path.dirname(wsdl_path)
     rel_path = os.path.relpath(xsd_path, wsdl_dir).replace(os.sep, "/")
 
     schema = ET.Element(f"{XSD}schema")
-    schema.set("schemaLocation", rel_path)
-    schema.set("namespace", target_namespace)
-    ET.SubElement(schema, f"{XSD}import", attrib={"schemaLocation": rel_path, "namespace": target_namespace})
+    attribs = OrderedDict()
+    attribs["schemaLocation"] = rel_path
+    attribs["namespace"] = target_namespace
+    ET.SubElement(schema, f"{XSD}import", attrib=attribs)
+    
     types.append(schema)
 
-    # --- Preparar la operación nueva como texto para no afectar los prefijos existentes
-    nueva_operacion_porttype = f"""
-        <wsdl:operation name="{operation_name}">
-            <wsdl:input message="tns:{input_msg}"/>
-            <wsdl:output message="tns:{output_msg}"/>
-        </wsdl:operation>
-    """
+    # --- 2) Mensajes
+    msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
+    ET.SubElement(msg_in, f"{WSDL}part", {"name": input_msg, "element": f"{ns_elem_prefix}:{input_msg}"})
+    
+    msg_out = ET.SubElement(root, f"{WSDL}message", {"name": output_msg})
+    ET.SubElement(msg_out, f"{WSDL}part", {"name": output_msg, "element": f"{ns_elem_prefix}:{output_msg}"})
 
-    nueva_operacion_binding = f"""
-        <wsdl:operation name="{operation_name}">
-            <soap:operation style="document" soapAction="{target_namespace}"/>
-            <wsdl:input>
-                <soap:body use="literal" parts="{input_msg}"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal" parts="{output_msg}"/>
-            </wsdl:output>
-        </wsdl:operation>
-    """
-
-    # --- Insertar en portType
+    # --- 3) PortType
     port_type = root.find(f"{WSDL}portType")
     if port_type is None:
-        # Si no existe, creamos uno nuevo (solo si es necesario)
-        port_type_name = f"{operation_name}_Port"
-        wsdl_content = wsdl_content.replace(
-            "<definitions",
-            f"<definitions>\n<wsdl:portType name='{port_type_name}'>\n{nueva_operacion_porttype}\n</wsdl:portType>\n",
-            1
-        )
-    else:
-        # Insertar la operación nueva antes del cierre
-        wsdl_content = wsdl_content.replace(
-            f"</{port_type.tag.split('}')[1]}>",
-            f"{nueva_operacion_porttype}\n</{port_type.tag.split('}')[1]}>",
-            1
-        )
+        port_type = ET.SubElement(root, f"{WSDL}portType", {"name": f"{operation_name}_Port"})
 
-    # --- Insertar en binding
+    op = ET.SubElement(port_type, f"{WSDL}operation", {"name": operation_name})
+    ET.SubElement(op, f"{WSDL}input",  {"message": f"tns:{input_msg}"})
+    ET.SubElement(op, f"{WSDL}output", {"message": f"tns:{output_msg}"})
+
+    # --- 4) Binding
     binding = root.find(f"{WSDL}binding")
     if binding is None:
-        # Si no existe, creamos uno nuevo
-        binding_name = f"{operation_name}_Binding"
-        port_type_name = port_type.get("name") if port_type is not None else f"{operation_name}_Port"
-        wsdl_content = wsdl_content.replace(
-            "<definitions",
-            f"<definitions>\n<wsdl:binding name='{binding_name}' type='tns:{port_type_name}'>\n{nueva_operacion_binding}\n</wsdl:binding>\n",
-            1
-        )
-    else:
-        # Insertar operación nueva antes del cierre del binding
-        wsdl_content = wsdl_content.replace(
-            f"</{binding.tag.split('}')[1]}>",
-            f"{nueva_operacion_binding}\n</{binding.tag.split('}')[1]}>",
-            1
-        )
+        binding = ET.SubElement(root, f"{WSDL}binding", {
+            "name": f"{operation_name}_Binding",
+            "type": f"tns:{port_type.get('name')}"
+        })
+        ET.SubElement(binding, f"{{{SOAP11_URI}}}binding", {"style": "document",
+                                                           "transport": "http://schemas.xmlsoap.org/soap/http"})
 
-    return wsdl_content
+    opb = ET.SubElement(binding, f"{WSDL}operation", {"name": operation_name})
+    ET.SubElement(opb, f"{{{SOAP11_URI}}}operation", {"style": "document", "soapAction": target_namespace})
+
+    inp = ET.SubElement(opb, f"{WSDL}input")
+    out = ET.SubElement(opb, f"{WSDL}output")
+
+    # --- 5) Determinar prefijo para <body>
+    # Si hay algún input body existente, tomamos su namespace
+    existing_input_body = root.xpath("//wsdl:operation/wsdl:input/*[local-name()='body']", namespaces=nsmap_global)
+    if existing_input_body:
+        body_ns_uri = existing_input_body[0].nsmap.get(existing_input_body[0].prefix)
+    else:
+        body_ns_uri = SOAP11_URI
+
+    soap_prefix = None
+    for prefix, uri in nsmap_global.items():
+        if uri == body_ns_uri:
+            soap_prefix = prefix
+            break
+    if not soap_prefix:
+        soap_prefix = 'soap' if body_ns_uri == SOAP11_URI else 'soap12'
+
+    # Crear los bodies con el prefijo correcto
+    ET.SubElement(inp, f"{{{body_ns_uri}}}body", use="literal", parts=input_msg, nsmap={soap_prefix: body_ns_uri})
+    ET.SubElement(out, f"{{{body_ns_uri}}}body", use="literal", parts=output_msg, nsmap={soap_prefix: body_ns_uri})
+
+    # --- 6) Serializar
+    return ET.tostring(root, encoding="unicode", pretty_print=True)
     
 def crear_wsdl_exp(service_name: str,
                     wsdl_path: str,
