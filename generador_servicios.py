@@ -2833,8 +2833,9 @@ def main():
             key="version_proxy_input"
         )
         operation_name = st.text_input("Nombre de la operación", "")
-        
-        st.session_state["operation_name"] = operation_name
+
+        # Siempre limpiar espacios en blanco antes de guardarlo
+        st.session_state["operation_name"] = operation_name.strip()
         
         if not st.session_state["operation_name"]:
             st.warning("⚠ Digita el nombre de la operación.")
