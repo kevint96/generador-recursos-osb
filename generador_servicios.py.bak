@@ -2116,7 +2116,7 @@ def generar_proyecto():
                 #st.markdown("<h6 style='text-align: center;'>Nombre XSD</h6>", unsafe_allow_html=True)
                 st.markdown(f"<h6 style='text-align: center;'>{st.session_state["xsd_name"]}</h6>", unsafe_allow_html=True)
                 st.text_input("📝 targetNamespace", disabled=True, key="targetnamespace")
-                st.text_input("📝 xmlns", value=st.session_state["xmlns"], disabled=True, key="xmlns")
+                st.text_input("📝 xmlns", value=st.session_state["xmlns"], disabled=False)
                 
                 # # 👇 caja con pestañas
                 # tab1, tab2 = st.tabs(["📄 XSD File", "📌 Otra info"])
