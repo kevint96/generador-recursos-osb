@@ -2828,14 +2828,29 @@ def main():
                                     unsafe_allow_html=True
                                 )
                                 
-                                proxy_seleccionado_ebs = st.selectbox(
-                                    "Proxy EBS",
-                                    proxies_ebs,
-                                    format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
-                                    label_visibility="collapsed"
-                                )
+                                # proxy_seleccionado_ebs = st.selectbox(
+                                    # "Proxy EBS",
+                                    # proxies_ebs,
+                                    # format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
+                                    # label_visibility="collapsed"
+                                # )
                                 
-                                if proxy_seleccionado_ebs:
+                                st.markdown(
+                                        f"""
+                                        <div style="font-size:18px; font-weight:bold;">Capa EBS</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
+                                
+                                capa_seleccionada_ebs = st.selectbox(
+                                        "Selecciona una ruta del proxy EBS:",
+                                        rutas_proxies_ebs,
+                                        format_func=lambda x: x.split("/")[0],  # 👈 muestra solo el nombre de la capa
+                                        disabled=True,
+                                        label_visibility="collapsed"
+                                    )
+                                
+                                if capa_seleccionada_ebs:
                                     # Obtener el nombre de servicio_ebs del proxy
                                     servicio_ebs = proxy_seleccionado_ebs.split("/")[-1].rsplit(".", 1)[0]
                                     
@@ -2852,13 +2867,6 @@ def main():
                                     )
                                     
                                     st.session_state["nombre_capa_ebs"] = st.session_state["ubicacion_proxy_ebs"].split("/")[0]
-
-                                    opcion_seleccionada = st.selectbox(
-                                        "Selecciona una ruta del proxy EBS:",
-                                        rutas_proxies_ebs,
-                                        format_func=lambda x: x.split("/")[0]  # 👈 muestra solo el nombre de la capa
-                                    )
-                                    
 
                                     st.session_state["version_ebs"] = st.selectbox(
                                         "Versión EBS",

@@ -2855,7 +2855,8 @@ def main():
 
                                     opcion_seleccionada = st.selectbox(
                                         "Selecciona una ruta del proxy EBS:",
-                                        rutas_proxies_ebs
+                                        rutas_proxies_ebs,
+                                        format_func=lambda x: x.split("/")[0]  # 👈 muestra solo el nombre de la capa
                                     )
                                     
 
