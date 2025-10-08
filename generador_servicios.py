@@ -2850,7 +2850,7 @@ def main():
                                     st.markdown(
                                         f"""
                                         <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
-                                        <div style="font-size:12px; color:gray;">📂 </div>
+                                        <div style="font-size:12px; color:gray;">📂 {capa_seleccionada_ebs}</div>
                                         """,
                                         unsafe_allow_html=True
                                     )

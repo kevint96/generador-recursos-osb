@@ -2841,7 +2841,7 @@ def main():
                                         "Selecciona una ruta del proxy EBS:",
                                         rutas_proxies_ebs,
                                         format_func=lambda x: x.split("/")[0],  # 👈 muestra solo el nombre de la capa
-                                        disabled=True,
+                                        disabled=False,
                                         label_visibility="collapsed"
                                     )
                                 
