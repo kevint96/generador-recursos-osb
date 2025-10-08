@@ -2901,10 +2901,32 @@ def main():
                                         
                                     
                             with st.expander("⚙️ CAPA ABC"):
+                                
+                                misma_operacion = st.radio(
+                                    "¿Nueva operacion ABC?",
+                                    options=["NO", "SI"],
+                                    index=0,
+                                    horizontal=True,
+                                    key="misma_operacion"
+                                )
+                                
+                                if misma_operacion == "NO":
+                                    
+                                    operation_name_abc = st.text_input("Nombre de la operación ABC", "")
+                                    st.session_state["operation_name_abc"] = operation_name_abc.strip()
+                                
+                                st.session_state["operation_name_abc"] = st.text_input(
+                                    label="Nombre de la operación ABC",
+                                    value=st.session_state["operation_name"],
+                                    disabled=True
+                                )
+                                
                                 st.session_state["nombre_capa_abc"] = st.text_input(
                                 "Nombre capa ABC",
                                 value=st.session_state["nombre_capa_abc"],  # recupera siempre
                                 key="nombre_capa_abc_input")
+                                
+                                
                                 
                                 st.session_state["version_proxy"] = st.selectbox(
                                 "Versión ABC",
