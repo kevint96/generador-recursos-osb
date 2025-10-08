@@ -2860,7 +2860,8 @@ def main():
                                         "Terminación EBS:",
                                         terminacion_ebs,
                                         index=terminacion_ebs.index("AS") if "AS" in terminacion_ebs else 0,
-                                        disabled=True
+                                        disabled=False,
+                                        label_visibility="collapsed"
                                     )
                                     st.markdown(
                                         f"""
@@ -2877,7 +2878,8 @@ def main():
                                             else 0
                                         ),
                                         key="version_ebs_input",
-                                        disabled=True
+                                        disabled=False,
+                                        label_visibility="collapsed"
                                     )
 
                                     st.markdown(

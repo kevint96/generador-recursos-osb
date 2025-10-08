@@ -2811,6 +2811,8 @@ def main():
                         
                         operation_name = st.text_input("Nombre de la operación", "")
                         
+                        st.session_state["operation_name"] = operation_name.strip()
+                        
                         if not st.session_state["operation_name"]:
                             st.warning("⚠ Digita el nombre de la operación.")
                         
@@ -2891,6 +2893,8 @@ def main():
                                     )
                                     st.session_state["service_name_ebs"] = st.text_input(
                                         label="Nombre del servicio EBS",
+                                        value=st.session_state["operation_name"]+st.session_state["terminacion_seleccionada_ebs"]+st.session_state["version_ebs"],
+                                        disabled=False,
                                         label_visibility="collapsed"
                                     )
                                     
