@@ -2864,7 +2864,7 @@ def main():
                                     terminacion_seleccionada_ebs = st.selectbox(
                                         "Terminación EBS:",
                                         terminacion_ebs,
-                                        default=["AS"],
+                                        index=terminacion_ebs.index("AS") if "AS" in terminacion_ebs else 0,
                                         disabled=False
                                     )
 
