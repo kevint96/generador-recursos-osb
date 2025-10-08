@@ -2831,23 +2831,43 @@ def main():
                                     format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
                                     label_visibility="collapsed"
                                 )
+                                
+                                if proxy_seleccionado_ebs:
+                                    # Obtener el nombre de servicio_ebs del proxy
+                                    servicio_ebs = proxy_seleccionado_ebs.split("/")[-1].rsplit(".", 1)[0]
+                                    
+                                    ruta_ebs = proxy_seleccionado_ebs
+                                    st.session_state["ubicacion_proxy_ebs"] = "/".join(ruta.split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                                    servicio_ebs = ruta_ebs.split("/")[-1].rsplit(".", 1)[0] # Nombre del servicio_ebs (sin extensión)
 
-                                st.session_state["nombre_capa_ebs"] = st.text_input(
-                                    "Nombre capa EBS",
-                                    value=st.session_state.get("nombre_capa_ebs", ""),
-                                    key="nombre_capa_ebs_input"
-                                )
+                                    st.markdown(
+                                        f"""
+                                        <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
+                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_ebs"]}</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
+                                    
+                                    st.session_state["nombre_capa_ebs"] = st.session_state["ubicacion_proxy_ebs"].split("/")[0]
 
-                                st.session_state["version_ebs"] = st.selectbox(
-                                    "Versión EBS",
-                                    options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
-                                    index=(
-                                        ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_ebs"])
-                                        if "version_ebs" in st.session_state and st.session_state["version_ebs"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
-                                        else 0
-                                    ),
-                                    key="version_ebs_input"
-                                )
+                                    st.session_state["service_name_ebs"] = st.text_input(
+                                        "Nombre del servicio ebs (interno)",
+                                        value=servicio_ebs,
+                                        disabled=True,
+                                        label_visibility="collapsed"
+                                    )
+                                    
+
+                                    st.session_state["version_ebs"] = st.selectbox(
+                                        "Versión EBS",
+                                        options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
+                                        index=(
+                                            ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_ebs"])
+                                            if "version_ebs" in st.session_state and st.session_state["version_ebs"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+                                            else 0
+                                        ),
+                                        key="version_ebs_input"
+                                    )
                         
                         # ----------------------------------------------------------------------
             
