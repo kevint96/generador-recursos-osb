@@ -2854,17 +2854,19 @@ def main():
                 if not st.session_state["proyectos_por_capa"][capa]:
                     st.warning(f"⚠ Digita el nombre de la capa {capa}")
         
-        st.session_state["version_proxy"] = st.selectbox(
-            "Versión ABC",
-            options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
-            index=(
-                ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
-                if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
-                else 0
-            ),
-            key="version_proxy_input"
-        )
+
         operation_name = st.text_input("Nombre de la operación", "")
+        
+        st.session_state["version_proxy"] = st.selectbox(
+        "Versión ABC",
+        options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
+        index=(
+            ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
+            if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+            else 0
+        ),
+        key="version_proxy_input"
+            )
 
         # Siempre limpiar espacios en blanco antes de guardarlo
         st.session_state["operation_name"] = operation_name.strip()
