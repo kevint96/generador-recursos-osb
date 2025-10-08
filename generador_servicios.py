@@ -2826,7 +2826,7 @@ def main():
                                 key="requiere_ebs"
                             )
 
-                            if requiere_ebs == "SI":
+                            if requiere_ebs == "SI" and st.session_state["operation_name"]:
                                 # proxy_seleccionado_ebs = st.selectbox(
                                     # "Proxy EBS",
                                     # proxies_ebs,
@@ -2894,7 +2894,7 @@ def main():
                                     st.session_state["service_name_ebs"] = st.text_input(
                                         label="Nombre del servicio EBS",
                                         value=st.session_state["operation_name"]+st.session_state["terminacion_seleccionada_ebs"]+st.session_state["version_ebs"],
-                                        disabled=False,
+                                        disabled=True,
                                         label_visibility="collapsed"
                                     )
                                     
