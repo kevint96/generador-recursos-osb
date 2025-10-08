@@ -2839,7 +2839,7 @@ def main():
                                         unsafe_allow_html=True
                                     )
                                 
-                                capa_seleccionada_ebs = st.selectbox(
+                                st.session_state["capa_seleccionada_ebs"] = st.selectbox(
                                         "Selecciona una ruta del proxy EBS:",
                                         rutas_proxies_ebs,
                                         format_func=lambda x: x.split("/")[0],  # 👈 muestra solo el nombre de la capa
@@ -2847,27 +2847,27 @@ def main():
                                         label_visibility="collapsed"
                                     )
                                 
-                                if capa_seleccionada_ebs:
-
+                                if st.session_state["capa_seleccionada_ebs"]:
+                                    
+                                    
                                     st.markdown(
                                         f"""
-                                        <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
-                                        <div style="font-size:12px; color:gray;">📂 {capa_seleccionada_ebs}</div>
+                                        <div style="font-size:18px; font-weight:bold;">Terminación EBS</div>
                                         """,
                                         unsafe_allow_html=True
                                     )
-                                    st.session_state["service_name_ebs"] = st.text_input(
-                                        label="Nombre del servicio EBS",
-                                        label_visibility="collapsed"
-                                    )
-                                    
-                                    terminacion_seleccionada_ebs = st.selectbox(
+                                    st.session_state["terminacion_seleccionada_ebs"] = st.selectbox(
                                         "Terminación EBS:",
                                         terminacion_ebs,
                                         index=terminacion_ebs.index("AS") if "AS" in terminacion_ebs else 0,
-                                        disabled=False
+                                        disabled=True
                                     )
-
+                                    st.markdown(
+                                        f"""
+                                        <div style="font-size:18px; font-weight:bold;">Versión EBS</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
                                     st.session_state["version_ebs"] = st.selectbox(
                                         "Versión EBS",
                                         options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
@@ -2876,8 +2876,23 @@ def main():
                                             if "version_ebs" in st.session_state and st.session_state["version_ebs"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
                                             else 0
                                         ),
-                                        key="version_ebs_input"
+                                        key="version_ebs_input",
+                                        disabled=True
                                     )
+
+                                    st.markdown(
+                                        f"""
+                                        <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
+                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["capa_seleccionada_ebs"]}</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
+                                    st.session_state["service_name_ebs"] = st.text_input(
+                                        label="Nombre del servicio EBS",
+                                        label_visibility="collapsed"
+                                    )
+                                    
+                                    
                         
                         # ----------------------------------------------------------------------
             
