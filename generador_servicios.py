@@ -2855,7 +2855,9 @@ def main():
 
                                     opcion_seleccionada = st.selectbox(
                                         "Selecciona una ruta del proxy EBS:",
-                                        rutas_proxies_ebs
+                                        rutas_proxies_ebs,
+                                        format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
+                                        label_visibility="collapsed"
                                     )
                                     
 
