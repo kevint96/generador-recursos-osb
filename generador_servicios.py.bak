@@ -2650,6 +2650,8 @@ def main():
             # Inicializar estructura
             capas_detectadas = {capa: {tipo: [] for tipo in artefactos} for capa in capas}
             
+            terminacion_ebs = ["DS", "AS"]
+            
             st.session_state["jar_file"] = jar_file
             
             if jar_file:
@@ -2857,6 +2859,12 @@ def main():
                                     st.session_state["service_name_ebs"] = st.text_input(
                                         label="Nombre del servicio EBS",
                                         label_visibility="collapsed"
+                                    )
+                                    
+                                    terminacion_seleccionada_ebs = st.selectbox(
+                                        "Terminación EBS:",
+                                        terminacion_ebs,
+                                        disabled=False
                                     )
 
                                     st.session_state["version_ebs"] = st.selectbox(
