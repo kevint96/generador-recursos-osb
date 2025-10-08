@@ -2803,6 +2803,9 @@ def main():
                         
                         operation_name = st.text_input("Nombre de la operación", "")
                         
+                        if not st.session_state["operation_name"]:
+                            st.warning("⚠ Digita el nombre de la operación.")
+                        
                         # --------------------- NUEVO BLOQUE PARA CAPA EBS ---------------------
                         with st.expander("⚙️ ¿Requiere capa EBS?"):
                             requiere_ebs = st.radio(
@@ -2910,6 +2913,9 @@ def main():
             
             # Siempre limpiar espacios en blanco antes de guardarlo
             st.session_state["operation_name"] = operation_name.strip()
+            
+            if not st.session_state["operation_name"]:
+                st.warning("⚠ Digita el nombre de la operación.")
         
             st.session_state["version_proxy"] = st.selectbox(
             "Versión ABC",
@@ -2924,10 +2930,6 @@ def main():
         
             #################################FIN#################################
 
-        
-        if not st.session_state["operation_name"]:
-            st.warning("⚠ Digita el nombre de la operación.")
-            
         if "generar_proyecto" not in st.session_state:
             st.session_state["generar_proyecto"] = False
 
