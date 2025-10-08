@@ -2823,11 +2823,6 @@ def main():
                             )
 
                             if requiere_ebs == "SI":
-                                st.markdown(
-                                    "<div style='font-size:16px; font-weight:bold; margin-top:10px;'>Configuración capa EBS</div>",
-                                    unsafe_allow_html=True
-                                )
-                                
                                 # proxy_seleccionado_ebs = st.selectbox(
                                     # "Proxy EBS",
                                     # proxies_ebs,
@@ -2851,22 +2846,16 @@ def main():
                                     )
                                 
                                 if capa_seleccionada_ebs:
-                                    # Obtener el nombre de servicio_ebs del proxy
-                                    servicio_ebs = proxy_seleccionado_ebs.split("/")[-1].rsplit(".", 1)[0]
-                                    
-                                    ruta_ebs = proxy_seleccionado_ebs
+
                                     st.session_state["ubicacion_proxy_ebs"] = "/".join(ruta_ebs.split("/")[:-1]) + "/"   # Carpeta (ubicación)
-                                    servicio_ebs = ruta_ebs.split("/")[-1].rsplit(".", 1)[0] # Nombre del servicio_ebs (sin extensión)
 
                                     st.markdown(
                                         f"""
                                         <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
-                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_ebs"]}</div>
+                                        <div style="font-size:12px; color:gray;">📂 </div>
                                         """,
                                         unsafe_allow_html=True
                                     )
-                                    
-                                    st.session_state["nombre_capa_ebs"] = st.session_state["ubicacion_proxy_ebs"].split("/")[0]
 
                                     st.session_state["version_ebs"] = st.selectbox(
                                         "Versión EBS",
