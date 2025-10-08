@@ -2854,6 +2854,7 @@ def main():
                                         """,
                                         unsafe_allow_html=True
                                     )
+                                    service_name_ebs = st.text_input("", "")
 
                                     st.session_state["version_ebs"] = st.selectbox(
                                         "Versión EBS",
