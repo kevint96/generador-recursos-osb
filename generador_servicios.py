@@ -2798,6 +2798,61 @@ def main():
                             disabled=True,
                             label_visibility="collapsed"
                         )
+                        
+                        ######################PARAMETROS INICIALES######################
+                        
+                        operation_name = st.text_input("Nombre de la operación", "")
+                        
+                        # --------------------- NUEVO BLOQUE PARA CAPA EBS ---------------------
+                        with st.expander("⚙️ ¿Requiere capa EBS?"):
+                            requiere_ebs = st.radio(
+                                "¿Desea crear capa EBS?",
+                                options=["NO", "SI"],
+                                index=0,
+                                horizontal=True,
+                                key="requiere_ebs"
+                            )
+
+                            if requiere_ebs == "SI":
+                                st.markdown(
+                                    "<div style='font-size:16px; font-weight:bold; margin-top:10px;'>Configuración capa EBS</div>",
+                                    unsafe_allow_html=True
+                                )
+
+                                st.session_state["nombre_capa_ebs"] = st.text_input(
+                                    "Nombre capa EBS",
+                                    value=st.session_state.get("nombre_capa_ebs", ""),
+                                    key="nombre_capa_ebs_input"
+                                )
+
+                                st.session_state["version_ebs"] = st.selectbox(
+                                    "Versión EBS",
+                                    options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
+                                    index=(
+                                        ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_ebs"])
+                                        if "version_ebs" in st.session_state and st.session_state["version_ebs"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+                                        else 0
+                                    ),
+                                    key="version_ebs_input"
+                                )
+                        
+                        # ----------------------------------------------------------------------
+            
+                        st.session_state["nombre_capa_abc"] = st.text_input(
+                        "Nombre capa ABC",
+                        value=st.session_state["nombre_capa_abc"],  # recupera siempre
+                        key="nombre_capa_abc_input")
+                        
+                        st.session_state["version_proxy"] = st.selectbox(
+                        "Versión ABC",
+                        options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
+                        index=(
+                            ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
+                            if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+                            else 0
+                        ),
+                        key="version_proxy_input")
+                        
                 else:
                     st.session_state["service_name"] = st.text_input(
                         "Nombre del servicio",
@@ -2811,25 +2866,6 @@ def main():
             if st.session_state["service_name"] == "No se detecto Proxie EXP":
                 st.warning("⚠ Debes subir el archivo .jar que contenga el proxy EXP.")
 
-            st.session_state["nombre_capa_abc"] = st.text_input(
-            "Nombre capa ABC",
-            value=st.session_state["nombre_capa_abc"],  # recupera siempre
-            key="nombre_capa_abc_input")
-            
-            
-            operation_name = st.text_input("Nombre de la operación", "")
-        
-            st.session_state["version_proxy"] = st.selectbox(
-            "Versión ABC",
-            options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
-            index=(
-                ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
-                if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
-                else 0
-            ),
-            key="version_proxy_input"
-                )
-            
             #################################FIN#################################
             
         else:
@@ -2883,7 +2919,7 @@ def main():
             key="version_proxy_input"
                 )
         
-        #################################FIN#################################
+            #################################FIN#################################
         
         # Siempre limpiar espacios en blanco antes de guardarlo
         st.session_state["operation_name"] = operation_name.strip()
