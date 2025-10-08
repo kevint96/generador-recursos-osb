@@ -2900,23 +2900,21 @@ def main():
                                         )
                                         
                                     
-                        
-                        # ----------------------------------------------------------------------
-            
-                        st.session_state["nombre_capa_abc"] = st.text_input(
-                        "Nombre capa ABC",
-                        value=st.session_state["nombre_capa_abc"],  # recupera siempre
-                        key="nombre_capa_abc_input")
-                        
-                        st.session_state["version_proxy"] = st.selectbox(
-                        "Versión ABC",
-                        options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
-                        index=(
-                            ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
-                            if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
-                            else 0
-                        ),
-                        key="version_proxy_input")
+                            with st.expander("⚙️ CAPA ABC"):
+                                st.session_state["nombre_capa_abc"] = st.text_input(
+                                "Nombre capa ABC",
+                                value=st.session_state["nombre_capa_abc"],  # recupera siempre
+                                key="nombre_capa_abc_input")
+                                
+                                st.session_state["version_proxy"] = st.selectbox(
+                                "Versión ABC",
+                                options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
+                                index=(
+                                    ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
+                                    if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+                                    else 0
+                                ),
+                                key="version_proxy_input")
                         
                 else:
                     st.session_state["service_name"] = st.text_input(
