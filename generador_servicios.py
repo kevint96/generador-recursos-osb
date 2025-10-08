@@ -2685,6 +2685,9 @@ def main():
                             
                 proxies_exp = capas_detectadas["EXP"]["Proxy"]
                 proxies_ebs = capas_detectadas["EBS"]["Proxy"]
+                rutas_proxies_ebs = list({
+                    "/".join(proxy.split("/")[:-1]) + "/" for proxy in proxies_ebs
+                })
                 proxy_seleccionado = ""
                 if proxies_exp:
                     ubicacion_proxy = "/".join(proxies_exp[0].split("/")[:-1]) + "/"   # Carpeta (ubicación)

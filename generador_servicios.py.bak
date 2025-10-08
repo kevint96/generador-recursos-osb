@@ -2837,7 +2837,7 @@ def main():
                                     servicio_ebs = proxy_seleccionado_ebs.split("/")[-1].rsplit(".", 1)[0]
                                     
                                     ruta_ebs = proxy_seleccionado_ebs
-                                    st.session_state["ubicacion_proxy_ebs"] = "/".join(ruta.split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                                    st.session_state["ubicacion_proxy_ebs"] = "/".join(ruta_ebs.split("/")[:-1]) + "/"   # Carpeta (ubicación)
                                     servicio_ebs = ruta_ebs.split("/")[-1].rsplit(".", 1)[0] # Nombre del servicio_ebs (sin extensión)
 
                                     st.markdown(
