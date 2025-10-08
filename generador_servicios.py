@@ -2921,6 +2921,7 @@ def main():
         
             #################################FIN#################################
         
+        operation_name = st.text_input("Nombre de la operación", "")
         # Siempre limpiar espacios en blanco antes de guardarlo
         st.session_state["operation_name"] = operation_name.strip()
         
