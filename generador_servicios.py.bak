@@ -2850,10 +2850,11 @@ def main():
                                     
                                     st.session_state["nombre_capa_ebs"] = st.session_state["ubicacion_proxy_ebs"].split("/")[0]
 
-                                    st.session_state["nombre_capa_ebs"] = st.text_input(
-                                        "Nombre capa EBS",
-                                        value=st.session_state.get("nombre_capa_ebs", ""),
-                                        key="nombre_capa_ebs_input"
+                                    st.session_state["service_name_ebs"] = st.text_input(
+                                        "Nombre del servicio ebs (interno)",
+                                        value=servicio_ebs,
+                                        disabled=True,
+                                        label_visibility="collapsed"
                                     )
                                     
 
