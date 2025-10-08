@@ -2853,12 +2853,12 @@ def main():
                                     
                                     st.session_state["nombre_capa_ebs"] = st.session_state["ubicacion_proxy_ebs"].split("/")[0]
 
-                                    st.session_state["service_name_ebs"] = st.text_input(
-                                        "Nombre del servicio ebs (interno)",
-                                        value=servicio_ebs,
-                                        disabled=True,
-                                        label_visibility="collapsed"
-                                    )
+                                    ruta_proxy_seleccionado_ebs = st.selectbox(
+                                    "Ruta Proxy EBS",
+                                    rutas_proxies_ebs,
+                                    format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
+                                    label_visibility="collapsed"
+                                    )   
                                     
 
                                     st.session_state["version_ebs"] = st.selectbox(
