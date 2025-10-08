@@ -2848,18 +2848,7 @@ def main():
                                     )
                                 
                                 if st.session_state["capa_seleccionada_ebs"]:
-
-                                    st.markdown(
-                                        f"""
-                                        <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
-                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["capa_seleccionada_ebs"]}</div>
-                                        """,
-                                        unsafe_allow_html=True
-                                    )
-                                    st.session_state["service_name_ebs"] = st.text_input(
-                                        label="Nombre del servicio EBS",
-                                        label_visibility="collapsed"
-                                    )
+                                    
                                     
                                     st.markdown(
                                         f"""
@@ -2890,6 +2879,20 @@ def main():
                                         key="version_ebs_input",
                                         disabled=True
                                     )
+
+                                    st.markdown(
+                                        f"""
+                                        <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
+                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["capa_seleccionada_ebs"]}</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
+                                    st.session_state["service_name_ebs"] = st.text_input(
+                                        label="Nombre del servicio EBS",
+                                        label_visibility="collapsed"
+                                    )
+                                    
+                                    
                         
                         # ----------------------------------------------------------------------
             
