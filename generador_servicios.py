@@ -2684,9 +2684,12 @@ def main():
                             capas_detectadas[capa_actual]["BusinessService"].append(ruta)
                             
                 proxies_exp = capas_detectadas["EXP"]["Proxy"]
+                proxies_ebs = capas_detectadas["EBS"]["Proxy"]
                 proxy_seleccionado = ""
                 if proxies_exp:
                     ubicacion_proxy = "/".join(proxies_exp[0].split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                    
+                    ubicacion_proxy_ebs = "/".join(proxies_ebs[0].split("/")[:-1]) + "/"   # Carpeta (ubicación ebs)
 
                     st.markdown(
                         """
@@ -2807,9 +2810,9 @@ def main():
                             st.warning("⚠ Digita el nombre de la operación.")
                         
                         # --------------------- NUEVO BLOQUE PARA CAPA EBS ---------------------
-                        with st.expander("⚙️ ¿Requiere capa EBS?"):
+                        with st.expander("⚙️ CAPA EBS"):
                             requiere_ebs = st.radio(
-                                "¿Desea crear capa EBS?",
+                                "¿Requiere crear orquestado EBS?",
                                 options=["NO", "SI"],
                                 index=0,
                                 horizontal=True,
@@ -2820,6 +2823,13 @@ def main():
                                 st.markdown(
                                     "<div style='font-size:16px; font-weight:bold; margin-top:10px;'>Configuración capa EBS</div>",
                                     unsafe_allow_html=True
+                                )
+                                
+                                proxy_seleccionado_ebs = st.selectbox(
+                                    "Proxy EBS",
+                                    proxies_ebs,
+                                    format_func=lambda x: x.split("/")[-1].rsplit(".", 1)[0],  # 👈 Solo muestra el nombre
+                                    label_visibility="collapsed"
                                 )
 
                                 st.session_state["nombre_capa_ebs"] = st.text_input(

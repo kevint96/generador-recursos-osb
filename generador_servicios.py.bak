@@ -2803,10 +2803,13 @@ def main():
                         
                         operation_name = st.text_input("Nombre de la operación", "")
                         
+                        if not st.session_state["operation_name"]:
+                            st.warning("⚠ Digita el nombre de la operación.")
+                        
                         # --------------------- NUEVO BLOQUE PARA CAPA EBS ---------------------
-                        with st.expander("⚙️ ¿Requiere capa EBS?"):
+                        with st.expander("⚙️ CAPA EBS"):
                             requiere_ebs = st.radio(
-                                "¿Desea crear capa EBS?",
+                                "¿Requiere crear orquestado EBS?",
                                 options=["NO", "SI"],
                                 index=0,
                                 horizontal=True,
