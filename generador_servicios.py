@@ -2847,8 +2847,6 @@ def main():
                                 
                                 if capa_seleccionada_ebs:
 
-                                    st.session_state["ubicacion_proxy_ebs"] = "/".join(ruta_ebs.split("/")[:-1]) + "/"   # Carpeta (ubicación)
-
                                     st.markdown(
                                         f"""
                                         <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>

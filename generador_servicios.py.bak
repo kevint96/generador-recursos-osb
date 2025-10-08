@@ -2856,8 +2856,6 @@ def main():
                                         """,
                                         unsafe_allow_html=True
                                     )
-                                    
-                                    st.session_state["nombre_capa_ebs"] = st.session_state["ubicacion_proxy_ebs"].split("/")[0]
 
                                     st.session_state["version_ebs"] = st.selectbox(
                                         "Versión EBS",
