@@ -2826,7 +2826,7 @@ def main():
                                 key="requiere_ebs"
                             )
 
-                            if requiere_ebs == "SI":
+                            if requiere_ebs == "SI" and st.session_state["operation_name"]:
                                 # proxy_seleccionado_ebs = st.selectbox(
                                     # "Proxy EBS",
                                     # proxies_ebs,
