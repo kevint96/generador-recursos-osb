@@ -2915,11 +2915,12 @@ def main():
                                     operation_name_abc = st.text_input("Nombre de la operación ABC", "")
                                     st.session_state["operation_name_abc"] = operation_name_abc.strip()
                                 
-                                st.session_state["operation_name_abc"] = st.text_input(
-                                    label="Nombre de la operación ABC",
-                                    value=st.session_state["operation_name"],
-                                    disabled=True
-                                )
+                                else:
+                                    st.session_state["operation_name_abc"] = st.text_input(
+                                        label="Nombre de la operación ABC",
+                                        value=st.session_state["operation_name"],
+                                        disabled=True
+                                    )
                                 
                                 st.session_state["nombre_capa_abc"] = st.text_input(
                                 "Nombre capa ABC",
