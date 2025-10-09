@@ -366,12 +366,12 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     """
     # Parsear el contenido ya con el namespace insertado
     try:
-        tree = ET.ElementTree(ET.fromstring(wsdl_content))
+        root = ET.fromstring(wsdl_content)
     except ET.ParseError as e:
         print("\n❌ Error al parsear el XML en agregar_operacion_wsdl:")
         st.code(wsdl_content[:1000], language="xml")
         raise
-    root = tree.getroot()
+    #root = tree.getroot()
 
     ns = {
         'wsdl': 'http://schemas.xmlsoap.org/wsdl/',
@@ -383,7 +383,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
         raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
 
     # --- Parsear
-    root = ET.fromstring(wsdl_content)
+    #root = ET.fromstring(wsdl_content)
 
     # Helpers de QName
     WSDL = "{%s}" % WSDL_URI
