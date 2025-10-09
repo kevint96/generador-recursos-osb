@@ -335,7 +335,7 @@ def procesar_wsdl(wsdl_content: str, wsdl_path: str,
     
     nuevo_xmlns = f'xmlns:{ns_elem_prefix}="{target_namespace}"'
     
-    st.write(f"{nuevo_xmlns}")
+    #st.write(f"{nuevo_xmlns}")
     
     #aplicar_indent_local(nuevo_xmlns, nivel=2)
     
@@ -2347,8 +2347,8 @@ def generar_proyecto():
                             st.session_state["xmlns"]
                         )
                         
-                        st.code(st.session_state["wsdl_text"], language="xml")
-                        st.code(st.session_state["archivo_wsdl_exp"], language="xml")
+                        #st.code(st.session_state["wsdl_text"], language="xml")
+                        #st.code(st.session_state["archivo_wsdl_exp"], language="xml")
                         xml_debug = st.session_state["archivo_wsdl_exp"].strip()
                         # Quitar BOM si existe
                         if xml_debug.startswith("\ufeff"):
@@ -2358,7 +2358,15 @@ def generar_proyecto():
                             ET.fromstring(xml_debug)
                             st.success("XML parsea correctamente")
                         except ET.ParseError as e:
-                            st.error(f"XML inválido: {e}")
+                            error_message = str(e)
+                            # Validar si el error es por atributo duplicado
+                            if "duplicate attribute" in error_message.lower():
+                                st.error("🚫 Error: Ya existe una operación con el mismo nombre en el WSDL actual. "
+                                         "Por favor, cambia el nombre de la operación e inténtalo nuevamente.")
+                            else:
+                                st.error(f"XML inválido: {error_message}")
+                            
+                            # Mostrar el XML problemático siempre que haya error
                             with st.expander("Ver XML problemático", expanded=True):
                                 st.code(xml_debug, language="xml")
                         
