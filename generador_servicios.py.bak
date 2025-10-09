@@ -2220,18 +2220,18 @@ def generar_proyecto():
                     
                     with st.expander("⚙️Generacion capa ABC", expanded=True):
                     
-                        st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
+                        st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
                         
-                        st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "proxy", st.session_state["version_proxy"])
+                        st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "proxy", st.session_state["version_proxy"])
                         st.session_state["ubicacion_proxy_abc"] = st.session_state["nombre_capa_abc"]+"/Proxies/"+st.session_state["proxy_abc"]
-                        st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "pipeline", st.session_state["version_proxy"])
+                        st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "pipeline", st.session_state["version_proxy"])
                         st.session_state["ubicacion_pipeline_abc"] = st.session_state["nombre_capa_abc"]+"/Pipeline/"+st.session_state["pipeline_abc"]
-                        st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "wsdl", st.session_state["version_proxy"])
+                        st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "wsdl", st.session_state["version_proxy"])
                         st.session_state["ubicacion_wsdl_abc"] = st.session_state["nombre_capa_abc"]+"/Resources/WSDLs/"+st.session_state["wsdl_abc"]
                         
                         
                         st.session_state["archivo_wsdl_abc"] = crear_wsdl_abc(
-                                st.session_state["operation_name"],
+                                st.session_state["operation_name_abc"],
                                 st.session_state["ubicacion_wsdl_abc"],
                                 st.session_state["ubicacion_xsd_exp"],
                                 st.session_state["targetnamespace"],
@@ -2273,7 +2273,7 @@ def generar_proyecto():
                             quitar_extension(st.session_state["ubicacion_wsdl_abc"]),
                             st.session_state["binding_wsdl_abc"],
                             st.session_state["namespace_wsdl_abc"],
-                            st.session_state["operation_name"]
+                            st.session_state["operation_name_abc"]
                         )
                         
                         #st.code(st.session_state["archivo_pipeline_abc"].replace("\n", " "), language="xml")
@@ -2410,18 +2410,18 @@ def generar_proyecto():
 
                     with st.expander("⚙️Generacion capa ABC", expanded=True):
                     
-                        st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
+                        st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
                         
-                        st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "proxy", st.session_state["version_proxy"])
+                        st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "proxy", st.session_state["version_proxy"])
                         st.session_state["ubicacion_proxy_abc"] = st.session_state["nombre_capa_abc"]+"/Proxies/"+st.session_state["proxy_abc"]
-                        st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "pipeline", st.session_state["version_proxy"])
+                        st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "pipeline", st.session_state["version_proxy"])
                         st.session_state["ubicacion_pipeline_abc"] = st.session_state["nombre_capa_abc"]+"/Pipeline/"+st.session_state["pipeline_abc"]
-                        st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "wsdl", st.session_state["version_proxy"])
+                        st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "wsdl", st.session_state["version_proxy"])
                         st.session_state["ubicacion_wsdl_abc"] = st.session_state["nombre_capa_abc"]+"/Resources/WSDLs/"+st.session_state["wsdl_abc"]
                         
                         
                         st.session_state["archivo_wsdl_abc"] = crear_wsdl_abc(
-                                st.session_state["operation_name"],
+                                st.session_state["operation_name_abc"],
                                 st.session_state["ubicacion_wsdl_abc"],
                                 st.session_state["ubicacion_xsd_exp"],
                                 st.session_state["targetnamespace"],
@@ -2463,7 +2463,7 @@ def generar_proyecto():
                             quitar_extension(st.session_state["ubicacion_wsdl_abc"]),
                             st.session_state["binding_wsdl_abc"],
                             st.session_state["namespace_wsdl_abc"],
-                            st.session_state["operation_name"]
+                            st.session_state["operation_name_abc"]
                         )
                         
                         #st.code(st.session_state["archivo_pipeline_abc"].replace("\n", " "), language="xml")
@@ -2903,8 +2903,8 @@ def main():
                             with st.expander("⚙️ CAPA ABC"):
                                 
                                 misma_operacion = st.radio(
-                                    "¿Nueva operacion ABC?",
-                                    options=["NO", "SI"],
+                                    "¿Misma operacion ABC?",
+                                    options=["SI", "NO"],
                                     index=0,
                                     horizontal=True,
                                     key="misma_operacion"
