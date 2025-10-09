@@ -350,25 +350,11 @@ def procesar_wsdl(wsdl_content: str, wsdl_path: str,
 
 def agregar_namespace_texto(wsdl_content: str, nuevo_xmlns: str) -> str:
     """
-    Inserta un nuevo xmlns dentro de <definitions> de forma segura usando ElementTree.
+    Inserta un nuevo xmlns dentro de <definitions ...> sin alterar el resto.
     """
-    try:
-        root = ET.fromstring(wsdl_content)
-    except ET.ParseError as e:
-        raise ValueError(f"Error al parsear el WSDL original antes de agregar namespace: {e}")
-
-    # Extrae el prefijo y el valor del xmlns nuevo
-    if not nuevo_xmlns.startswith("xmlns:"):
-        raise ValueError(f"Formato inválido de namespace: {nuevo_xmlns}")
-
-    parts = nuevo_xmlns.replace("xmlns:", "").split("=")
-    prefix = parts[0]
-    uri = parts[1].strip('"')
-
-    # Agregarlo al elemento raíz
-    root.set(f"xmlns:{prefix}", uri)
-
-    return ET.tostring(root, encoding="unicode")
+    patron = r'(<definitions[^>]*)(>)'
+    reemplazo = r'\1 ' + nuevo_xmlns + r'\2'
+    return re.sub(patron, reemplazo, wsdl_content, count=1)
 
 def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
                            operation_name, input_msg, output_msg, ns_elem_prefix):
