@@ -400,7 +400,7 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
         root = ET.fromstring(wsdl_content)
     except ET.ParseError as e:
         st.error(f"❌ Error al parsear el XML en agregar_operacion_wsdl: {e}")
-        st.code(wsdl_content[:1000], language="xml")
+        st.code(wsdl_content[:10000], language="xml")
         raise
     #root = tree.getroot()
 
