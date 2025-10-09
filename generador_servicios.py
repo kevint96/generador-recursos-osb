@@ -374,22 +374,25 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     # Reemplazar entidades problemáticas (& sueltas)
     wsdl_content = re.sub(r'&(?!amp;|lt;|gt;|quot;|apos;)', '&amp;', wsdl_content)
     
-    # # --- 🔹 LIMPIEZA DE XMLNS DUPLICADOS ---
-    # # A veces, al modificar el texto del WSDL, quedan atributos xmlns duplicados.
-    # # Este bloque elimina los repetidos para evitar ParseError.
-    # xmlns_seen = set()
-    # cleaned_parts = []
-
-    # # Dividimos por espacios, pero cuidamos no romper el XML
-    # for part in re.split(r'(\s+)', wsdl_content):
-        # if part.strip().startswith("xmlns:"):
-            # prefix = part.strip().split("=")[0]
-            # if prefix in xmlns_seen:
-                # continue  # ignora duplicado
-            # xmlns_seen.add(prefix)
-        # cleaned_parts.append(part)
-
-    # wsdl_content = "".join(cleaned_parts)
+    # Extraer el bloque completo de apertura de <definitions ...>
+    match = re.search(r'(<definitions\b[^>]*>)', wsdl_content)
+    if match:
+        defs_tag = match.group(1)
+        seen_prefixes = set()
+        cleaned_attrs = []
+        # Buscar todos los xmlns:*="..." dentro del tag
+        for attr in re.findall(r'xmlns:[a-zA-Z0-9_-]+="[^"]+"', defs_tag):
+            prefix = attr.split("=")[0]
+            if prefix in seen_prefixes:
+                defs_tag = defs_tag.replace(attr, "", 1)  # elimina solo una ocurrencia
+            else:
+                seen_prefixes.add(prefix)
+        # Limpieza de espacios dobles y cierre garantizado con ">"
+        defs_tag = re.sub(r'\s{2,}', ' ', defs_tag).replace(' >', '>')
+        if not defs_tag.endswith('>'):
+            defs_tag += '>'
+        # Reemplazar en el XML original
+        wsdl_content = wsdl_content.replace(match.group(1), defs_tag, 1)
 
     # --- 2️⃣ Intentar parsear ---
     try:
