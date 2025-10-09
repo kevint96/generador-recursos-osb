@@ -335,7 +335,7 @@ def procesar_wsdl(wsdl_content: str, wsdl_path: str,
     
     nuevo_xmlns = f'xmlns:{ns_elem_prefix}="{target_namespace}"'
     
-    print(f"{nuevo_xmlns}")
+    st.write(f"{nuevo_xmlns}")
     
     #aplicar_indent_local(nuevo_xmlns, nivel=2)
     
