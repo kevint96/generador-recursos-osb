@@ -364,11 +364,21 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     """
     Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
     """
-    # Parsear el contenido ya con el namespace insertado
+    # --- 1️⃣ Limpieza básica del texto XML ---
+    if not wsdl_content or "<definitions" not in wsdl_content:
+        raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
+
+    # Eliminar BOM si existe
+    wsdl_content = wsdl_content.lstrip("\ufeff")
+
+    # Reemplazar entidades problemáticas (& sueltas)
+    wsdl_content = re.sub(r'&(?!amp;|lt;|gt;|quot;|apos;)', '&amp;', wsdl_content)
+
+    # --- 2️⃣ Intentar parsear ---
     try:
         root = ET.fromstring(wsdl_content)
     except ET.ParseError as e:
-        print("\n❌ Error al parsear el XML en agregar_operacion_wsdl:")
+        st.error(f"❌ Error al parsear el XML en agregar_operacion_wsdl: {e}")
         st.code(wsdl_content[:1000], language="xml")
         raise
     #root = tree.getroot()
@@ -379,9 +389,6 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
         'soap': 'http://schemas.xmlsoap.org/wsdl/soap/',
     }
     
-    if not wsdl_content or "<definitions" not in wsdl_content:
-        raise ValueError("El WSDL recibido está vacío o no contiene <definitions>.")
-
     # --- Parsear
     #root = ET.fromstring(wsdl_content)
 

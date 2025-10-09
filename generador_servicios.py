@@ -373,6 +373,27 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
 
     # Reemplazar entidades problemáticas (& sueltas)
     wsdl_content = re.sub(r'&(?!amp;|lt;|gt;|quot;|apos;)', '&amp;', wsdl_content)
+    
+    # --- 🔹 LIMPIEZA DE XMLNS DUPLICADOS ---
+    # A veces, al modificar el texto del WSDL, quedan atributos xmlns duplicados.
+    # Este bloque elimina los repetidos para evitar ParseError.
+    xmlns_seen = set()
+    cleaned_parts = []
+
+    # Dividimos por espacios, pero cuidamos no romper el XML
+    for part in re.split(r'(\s+)', wsdl_content):
+        if part.strip().startswith("xmlns:"):
+            prefix = part.strip().split("=")[0]
+            if prefix in xmlns_seen:
+                continue  # ignora duplicado
+            xmlns_seen.add(prefix)
+        cleaned_parts.append(part)
+
+    wsdl_content = "".join(cleaned_parts)
+    
+    # Verifica visualmente si sigue bien formado
+    if wsdl_content.strip().startswith("<?xml"):
+        st.write("✅ Cabecera XML detectada correctamente.")
 
     # --- 2️⃣ Intentar parsear ---
     try:
