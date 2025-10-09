@@ -235,14 +235,6 @@ def limpiar_wsdl_contenido(wsdl_text):
     # Si no tiene CDATA, devolver tal cual
     return wsdl_text.strip()
 
-def agregar_namespace_texto(wsdl_content: str, nuevo_xmlns: str) -> str:
-    """
-    Inserta un nuevo xmlns dentro de <definitions ...> sin alterar el resto.
-    """
-    patron = r'(<definitions[^>]*)(>)'
-    reemplazo = r'\1 ' + nuevo_xmlns + r'\2'
-    return re.sub(patron, reemplazo, wsdl_content, count=1)
-
 def append_in_order(parent, new_elem, after_tags):
     """
     Inserta `new_elem` dentro de `parent` inmediatamente
@@ -256,7 +248,6 @@ def append_in_order(parent, new_elem, after_tags):
             pos = i + 1
     parent.insert(pos, new_elem)
 
-
 def fusionar_definitions(original_wsdl: str, nuevo_wsdl: str) -> str:
     # Extraer la cabecera <definitions ...>
     match_orig = re.search(r"(<definitions[^>]*>)", original_wsdl)
@@ -264,27 +255,6 @@ def fusionar_definitions(original_wsdl: str, nuevo_wsdl: str) -> str:
     if match_orig and match_new:
         return nuevo_wsdl.replace(match_new.group(1), match_orig.group(1), 1)
     return nuevo_wsdl
-
-def procesar_wsdl(wsdl_content: str, wsdl_path: str,
-                  target_namespace: str, xsd_path: str,
-                  operation_name: str, input_msg: str, output_msg: str,
-                  ns_elem_prefix: str) -> str:
-    # 1) Insertar el nuevo namespace al texto plano
-    
-    nuevo_xmlns = f'xmlns:{ns_elem_prefix}="{target_namespace}"'
-    
-    #aplicar_indent_local(nuevo_xmlns, nivel=2)
-    
-    wsdl_content_mod = agregar_namespace_texto(wsdl_content, nuevo_xmlns)
-
-    # 2) Insertar la nueva operación (ya no tocamos <definitions>)
-    wsdl_content_final = agregar_operacion_wsdl(
-        wsdl_content_mod, wsdl_path, target_namespace, xsd_path,
-        operation_name, input_msg, output_msg, ns_elem_prefix
-    )
-    wsdl_content_final = fusionar_definitions(wsdl_content_mod, wsdl_content_final)
-
-    return wsdl_content_final
 
 def reordenar_definitions(root):
     """
@@ -357,6 +327,49 @@ def aplicar_indent_local(elem, nivel=1, espacio="  "):
     if not elem.tail or not elem.tail.strip():
         elem.tail = "\n" + ((nivel - 1) * espacio)
 
+def procesar_wsdl(wsdl_content: str, wsdl_path: str,
+                  target_namespace: str, xsd_path: str,
+                  operation_name: str, input_msg: str, output_msg: str,
+                  ns_elem_prefix: str) -> str:
+    # 1) Insertar el nuevo namespace al texto plano
+    
+    nuevo_xmlns = f'xmlns:{ns_elem_prefix}="{target_namespace}"'
+    
+    #aplicar_indent_local(nuevo_xmlns, nivel=2)
+    
+    wsdl_content_mod = agregar_namespace_texto(wsdl_content, nuevo_xmlns)
+
+    # 2) Insertar la nueva operación (ya no tocamos <definitions>)
+    wsdl_content_final = agregar_operacion_wsdl(
+        wsdl_content_mod, wsdl_path, target_namespace, xsd_path,
+        operation_name, input_msg, output_msg, ns_elem_prefix
+    )
+    wsdl_content_final = fusionar_definitions(wsdl_content_mod, wsdl_content_final)
+
+    return wsdl_content_final
+
+def agregar_namespace_texto(wsdl_content: str, nuevo_xmlns: str) -> str:
+    """
+    Inserta un nuevo xmlns dentro de <definitions> de forma segura usando ElementTree.
+    """
+    try:
+        root = ET.fromstring(wsdl_content)
+    except ET.ParseError as e:
+        raise ValueError(f"Error al parsear el WSDL original antes de agregar namespace: {e}")
+
+    # Extrae el prefijo y el valor del xmlns nuevo
+    if not nuevo_xmlns.startswith("xmlns:"):
+        raise ValueError(f"Formato inválido de namespace: {nuevo_xmlns}")
+
+    parts = nuevo_xmlns.replace("xmlns:", "").split("=")
+    prefix = parts[0]
+    uri = parts[1].strip('"')
+
+    # Agregarlo al elemento raíz
+    root.set(f"xmlns:{prefix}", uri)
+
+    return ET.tostring(root, encoding="unicode")
+
 def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
                            operation_name, input_msg, output_msg, ns_elem_prefix):
 
@@ -364,7 +377,14 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     Modifica el WSDL en memoria y devuelve el nuevo contenido como string.
     """
     # Parsear el contenido ya con el namespace insertado
-    tree = ET.ElementTree(ET.fromstring(wsdl_content))
+    try:
+        tree = ET.ElementTree(ET.fromstring(wsdl_content))
+    except ET.ParseError as e:
+        print("\n❌ Error al parsear el XML en agregar_operacion_wsdl:")
+        print(e)
+        print("---- Primeros 500 caracteres ----")
+        print(wsdl_content[:500])
+        raise
     root = tree.getroot()
 
     ns = {
