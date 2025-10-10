@@ -1794,8 +1794,25 @@ def generar_nombrado_abc(nombre, tipo="proxy", version="V1.0"):
     return f"{prefijo}{snake}DA{version}{extension}"
 
 def generar_nombrado_ebs(nombre, tipo="proxy", version="V1.0"):
-
-    return f"{st.session_state["service_name_ebs"]}"
+    
+    extension = ""
+    
+    # 2. Prefijo según tipo
+    if tipo.lower() == "proxy":
+        prefijo = ""
+        extension = ".proxy"
+    elif tipo.lower() == "pipeline":
+        prefijo = ""
+        extension = ".pipeline"
+    elif tipo.lower() == "wsdl":
+        prefijo = ""
+        extension = ".wsdl"
+    elif tipo.lower() == "nombre":
+        prefijo = ""
+    else:
+        raise ValueError("Tipo no reconocido. Usa 'proxy', 'pipeline', 'wsdl' o 'nombre'.")
+        
+    return f"{st.session_state["service_name_ebs"]}{extension}"
 
 def crear_wsdl_ebs(operation_name: str,
                    wsdl_path: str,
