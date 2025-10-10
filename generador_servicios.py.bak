@@ -2320,10 +2320,76 @@ def generar_proyecto():
                         )
                         st.text_input("📝 WSDL ABC", value=st.session_state["wsdl_abc"], disabled=True, label_visibility="collapsed")
                         
+                    if st.session_state["requiere_ebs"] ="SI":
+                        with st.expander("⚙️Generacion capa EBS", expanded=True):
                         
-                        #st.markdown("<h6 style='text-align: left;'>📝WSDL Autogenerado:</h6>", unsafe_allow_html=True)
-                        #st.code(st.session_state["archivo_wsdl_abc"].replace("\n",""), language="xml")
-                    
+                            st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
+                            
+                            st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "proxy", st.session_state["version_proxy"])
+                            st.session_state["ubicacion_proxy_abc"] = st.session_state["nombre_capa_abc"]+"/Proxies/"+st.session_state["proxy_abc"]
+                            st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "pipeline", st.session_state["version_proxy"])
+                            st.session_state["ubicacion_pipeline_abc"] = st.session_state["nombre_capa_abc"]+"/Pipeline/"+st.session_state["pipeline_abc"]
+                            st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name"], "wsdl", st.session_state["version_proxy"])
+                            st.session_state["ubicacion_wsdl_abc"] = st.session_state["nombre_capa_abc"]+"/Resources/WSDLs/"+st.session_state["wsdl_abc"]
+                            
+                            
+                            st.session_state["archivo_wsdl_abc"] = crear_wsdl_abc(
+                                    st.session_state["operation_name"],
+                                    st.session_state["ubicacion_wsdl_abc"],
+                                    st.session_state["ubicacion_xsd_exp"],
+                                    st.session_state["targetnamespace"],
+                                    st.session_state["xmlns"]
+                                )
+                            
+                            st.session_state["namespace_wsdl_abc"], st.session_state["binding_wsdl_abc"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_abc"])
+                            
+                            st.markdown(
+                                    f"""
+                                    <div style="font-size:14px; font-weight:400; font-family:Source Sans Pro">📝 Proxy ABC</div>
+                                    <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_abc"]}</div>
+                                    """,
+                                    unsafe_allow_html=True
+                            )
+                            st.text_input("📝 Proxy ABC", value=st.session_state["proxy_abc"], disabled=True, label_visibility="collapsed")
+                            
+                            st.session_state["archivo_proxy_abc"] = crear_proxy_abc(
+                                quitar_extension(st.session_state["ubicacion_wsdl_abc"]),
+                                st.session_state["binding_wsdl_abc"],
+                                st.session_state["namespace_wsdl_abc"],
+                                quitar_extension(st.session_state["ubicacion_pipeline_abc"])
+                            )
+                            
+                            #st.code(st.session_state["archivo_proxy_abc"].replace("\n", " "), language="xml")
+                            
+                            
+                            st.markdown(
+                                    f"""
+                                    <div style="font-size:14px; font-weight:400; font-family:Source Sans Pro">📝 Pipeline ABC</div>
+                                    <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_pipeline_abc"]}</div>
+                                    """,
+                                    unsafe_allow_html=True
+                            )
+                            st.text_input("📝 Pipeline ABC", value=st.session_state["pipeline_abc"], disabled=True, label_visibility="collapsed")
+                            
+                            
+                            st.session_state["archivo_pipeline_abc"] = crear_pipeline_abc(
+                                quitar_extension(st.session_state["ubicacion_wsdl_abc"]),
+                                st.session_state["binding_wsdl_abc"],
+                                st.session_state["namespace_wsdl_abc"],
+                                st.session_state["operation_name"]
+                            )
+                            
+                            #st.code(st.session_state["archivo_pipeline_abc"].replace("\n", " "), language="xml")
+                            
+                            st.markdown(
+                                    f"""
+                                    <div style="font-size:14px; font-weight:400; font-family:Source Sans Pro">📝 WSDL ABC</div>
+                                    <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_abc"]}</div>
+                                    """,
+                                    unsafe_allow_html=True
+                            )
+                            st.text_input("📝 WSDL ABC", value=st.session_state["wsdl_abc"], disabled=True, label_visibility="collapsed")
+                            
 
                     with st.expander("⚙️Actualizacion capa EXP", expanded=True):
                         
@@ -2861,7 +2927,7 @@ def main():
                         # --------------------- NUEVO BLOQUE PARA CAPA EBS ---------------------
                         if st.session_state["operation_name"]:
                             with st.expander("⚙️ CAPA EBS"):
-                                requiere_ebs = st.radio(
+                                st.session_state["requiere_ebs"] = st.radio(
                                     "¿Requiere crear orquestado EBS?",
                                     options=["NO", "SI"],
                                     index=0,
@@ -2869,7 +2935,7 @@ def main():
                                     key="requiere_ebs"
                                 )
 
-                                if requiere_ebs == "SI":
+                                if st.session_state["requiere_ebs"] == "SI":
                                     # proxy_seleccionado_ebs = st.selectbox(
                                         # "Proxy EBS",
                                         # proxies_ebs,

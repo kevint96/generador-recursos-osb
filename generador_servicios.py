@@ -2320,7 +2320,7 @@ def generar_proyecto():
                         )
                         st.text_input("📝 WSDL ABC", value=st.session_state["wsdl_abc"], disabled=True, label_visibility="collapsed")
                         
-                    if st.session_state["requiere_ebs"] ="SI":
+                    if st.session_state["requiere_ebs"] == "SI":
                         with st.expander("⚙️Generacion capa EBS", expanded=True):
                         
                             st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
