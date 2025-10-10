@@ -2320,7 +2320,7 @@ def generar_proyecto():
                         )
                         st.text_input("📝 WSDL ABC", value=st.session_state["wsdl_abc"], disabled=True, label_visibility="collapsed")
                         
-                    if st.session_state["requiere_ebs"] == "SI":
+                    if st.session_state.get("requiere_ebs") == "SI":
                         with st.expander("⚙️Generacion capa EBS", expanded=True):
                         
                             st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
@@ -2927,7 +2927,7 @@ def main():
                         # --------------------- NUEVO BLOQUE PARA CAPA EBS ---------------------
                         if st.session_state["operation_name"]:
                             with st.expander("⚙️ CAPA EBS"):
-                                st.session_state["requiere_ebs"] = st.radio(
+                                st.radio(
                                     "¿Requiere crear orquestado EBS?",
                                     options=["NO", "SI"],
                                     index=0,
@@ -2935,7 +2935,7 @@ def main():
                                     key="requiere_ebs"
                                 )
 
-                                if st.session_state["requiere_ebs"] == "SI":
+                                if st.session_state.get("requiere_ebs") == "SI":
                                     # proxy_seleccionado_ebs = st.selectbox(
                                         # "Proxy EBS",
                                         # proxies_ebs,
