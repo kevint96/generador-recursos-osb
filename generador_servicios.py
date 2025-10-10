@@ -3014,9 +3014,6 @@ def generar_proyecto():
                         key="ubicacion_xsd_abc_input"
                     )
 
-                    if not st.session_state["ubicacion_xsd_exp"]:
-                        st.warning("⚠ Digita la ubicacion del xsd EXP.")
-                        
                     if not st.session_state["ubicacion_xsd_abc"]:
                         st.warning("⚠ Digita la ubicacion del xsd ABC.")
             
