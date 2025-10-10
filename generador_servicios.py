@@ -1812,7 +1812,7 @@ def generar_nombrado_ebs(nombre, tipo="proxy", version="V1.0"):
     else:
         raise ValueError("Tipo no reconocido. Usa 'proxy', 'pipeline', 'wsdl' o 'nombre'.")
         
-    return f"{st.session_state["service_name_ebs"]}{extension}"
+    return f"{st.session_state["service_name_ebs"].capitalize()}{extension}"
 
 def crear_wsdl_ebs(operation_name: str,
                    wsdl_path: str,

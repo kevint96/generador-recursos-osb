@@ -2814,6 +2814,19 @@ def exportar_proyecto_jar():
                 "XMLSchema$ComponentesComunes$Resources$Schemas$Entidades$ComunesV2.1$Cabeceras"
             ]
         ))
+        
+        if st.session_state.get("misma_operacion_abc") == "NO":
+            
+            # --- XSD ABC ---
+            xsd_abc_full = st.session_state["ubicacion_xsd_abc"].replace("\\", "/").replace(".xsd", "")
+            items.append(generar_exported_item(
+                instance_id=xsd_abc_full,
+                type_id="XMLSchema",
+                extrefs=[
+                    "XMLSchema$ComponentesComunes$Resources$Schemas$Entidades$ComunesV2.1$Cabeceras"
+                ]
+            ))
+            
 
         # --- PROXY EXP (si aplica) ---
         if st.session_state["tipo_servicio"] == "Nuevo":
