@@ -2550,7 +2550,16 @@ def exportar_proyecto_zip():
         os.makedirs(os.path.dirname(xsd_abs_path), exist_ok=True)
         with open(xsd_abs_path, "w", encoding="utf-8") as f:
             f.write(st.session_state["xsd_file"])
+        
+        #Se guarda XSD ABC cuando es diferente operacion
+        if st.session_state.get("misma_operacion_abc") == "NO":
+            xsd_rel_path_abc = st.session_state["ubicacion_xsd_abc"]  # ej: "ComponentesComunes\\Resources\\Schemas\\Servicios\\DatosVisacionV2.1\\consultarInfoArchivoIngresoPrestamo.xsd"
+            xsd_abs_path_abc = os.path.join(tmpdir, xsd_rel_path_abc)  # Se crea directamente en la raíz del .zip
 
+            os.makedirs(os.path.dirname(xsd_abs_path_abc), exist_ok=True)
+            with open(xsd_abs_path_abc, "w", encoding="utf-8") as f:
+                f.write(st.session_state["xsd_file_abc"])
+                
         # --- Crear estructura ABC ---
         abc_root = os.path.join(tmpdir, f"{st.session_state['nombre_capa_abc']}")
         
@@ -2710,6 +2719,11 @@ def exportar_proyecto_jar():
         guardar_recurso(st.session_state["ubicacion_pipeline_abc"], st.session_state["archivo_pipeline_abc"])
         guardar_recurso(st.session_state["ubicacion_wsdl_abc"], st.session_state["archivo_wsdl_abc"])
 
+        #Opcion operacion ABC diferente
+        if st.session_state.get("misma_operacion_abc") == "NO":
+            guardar_recurso(st.session_state["ubicacion_xsd_abc"], st.session_state["xsd_file_abc"])
+        else:
+            st.session_state["ubicacion_xsd_abc"] = st.session_state["ubicacion_xsd_exp"]
         # --- Construir ExportInfo dinámicamente ---
         exporttime = datetime.now().strftime("%a %b %d %H:%M:%S %Z %Y")
         items = []
@@ -2742,7 +2756,7 @@ def exportar_proyecto_jar():
         ))
 
         # --- WSDL ABC ---
-        xsd_exp_path = st.session_state["ubicacion_xsd_exp"].replace("\\", "/").replace(".xsd", "")
+        xsd_exp_path = st.session_state["ubicacion_xsd_abc"].replace("\\", "/").replace(".xsd", "")
         items.append(generar_exported_item(
             instance_id=wsdl_abc_path,
             type_id="WSDL",
