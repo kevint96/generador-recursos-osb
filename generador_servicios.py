@@ -2528,13 +2528,13 @@ def generar_proyecto():
                         
                             st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_ebs(st.session_state["operation_name"], "nombre", st.session_state["version_ebs"])}</h6>", unsafe_allow_html=True)
                             
-                            st.write(f"{st.session_state["capa_seleccionada_ebs"]}")
+                            #st.write(f"{st.session_state["capa_seleccionada_ebs"]}")
                             st.session_state["proxy_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "proxy", st.session_state["version_ebs"])
-                            st.session_state["ubicacion_proxy_ebs"] = st.session_state["capa_seleccionada_ebs"]+"/Proxies/"+st.session_state["proxy_ebs"]
+                            st.session_state["ubicacion_proxy_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Proxies/"+st.session_state["proxy_ebs"]
                             st.session_state["pipeline_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "pipeline", st.session_state["version_ebs"])
-                            st.session_state["ubicacion_pipeline_ebs"] = st.session_state["capa_seleccionada_ebs"]+"/Pipeline/"+st.session_state["pipeline_ebs"]
+                            st.session_state["ubicacion_pipeline_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Pipeline/"+st.session_state["pipeline_ebs"]
                             st.session_state["wsdl_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "wsdl", st.session_state["version_ebs"])
-                            st.session_state["ubicacion_wsdl_ebs"] = st.session_state["capa_seleccionada_ebs"]+"/Resources/WSDLs/"+st.session_state["wsdl_ebs"]
+                            st.session_state["ubicacion_wsdl_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Resources/WSDLs/"+st.session_state["wsdl_ebs"]
                             
                             
                             st.session_state["archivo_wsdl_ebs"] = crear_wsdl_ebs(
