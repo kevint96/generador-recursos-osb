@@ -3041,7 +3041,7 @@ def generar_proyecto():
                             st.session_state["pipeline_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "pipeline", st.session_state["version_ebs"])
                             st.session_state["ubicacion_pipeline_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Pipeline/"+st.session_state["pipeline_ebs"]
                             st.session_state["wsdl_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "wsdl", st.session_state["version_ebs"])
-                            st.session_state["ubicacion_wsdl_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Resources/WSDLs/"+st.session_state["wsdl_ebs"]
+                            st.session_state["ubicacion_wsdl_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Resources/Wsdls/"+st.session_state["wsdl_ebs"]
                             
                             
                             st.session_state["archivo_wsdl_ebs"] = crear_wsdl_ebs(
