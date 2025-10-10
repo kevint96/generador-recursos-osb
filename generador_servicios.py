@@ -1794,25 +1794,31 @@ def generar_nombrado_abc(nombre, tipo="proxy", version="V1.0"):
     return f"{prefijo}{snake}DA{version}{extension}"
 
 def generar_nombrado_ebs(nombre, tipo="proxy", version="V1.0"):
-    
     extension = ""
-    
-    # 2. Prefijo según tipo
-    if tipo.lower() == "proxy":
-        prefijo = ""
+
+    # 1️⃣ Determinar extensión según tipo
+    tipo = tipo.lower()
+    if tipo == "proxy":
         extension = ".proxy"
-    elif tipo.lower() == "pipeline":
-        prefijo = ""
+    elif tipo == "pipeline":
         extension = ".pipeline"
-    elif tipo.lower() == "wsdl":
-        prefijo = ""
+    elif tipo == "wsdl":
         extension = ".wsdl"
-    elif tipo.lower() == "nombre":
-        prefijo = ""
+    elif tipo == "nombre":
+        extension = ""
     else:
         raise ValueError("Tipo no reconocido. Usa 'proxy', 'pipeline', 'wsdl' o 'nombre'.")
-        
-    return f"{st.session_state["service_name_ebs"].capitalize()}{extension}"
+
+    # 2️⃣ Tomar el nombre base
+    base = st.session_state["service_name_ebs"]
+
+    # 3️⃣ Asegurar que la primera letra esté en mayúscula y conservar el resto (camelCase)
+    base = base[0].upper() + base[1:]
+
+    # 4️⃣ Asegurar que si contiene 'ASV2.1', quede en mayúsculas
+    #base = base.replace("Asv2.1", "ASV2.1").replace("asv2.1", "ASV2.1")
+
+    return f"{base}{extension}"
 
 def crear_wsdl_ebs(operation_name: str,
                    wsdl_path: str,
