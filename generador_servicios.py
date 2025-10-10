@@ -3005,16 +3005,15 @@ def generar_proyecto():
                     st.text_input("📝 targetNamespace", disabled=True, key="targetnamespace_abc")
                     st.text_input("📝 xmlns", value=st.session_state["xmlns_abc"], disabled=True)
                     
-
+                    ubicacion_xsd_abc = st.session_state.get("ubicacion_xsd_abc", "")
+                    
                     # Campo editable que recuerda su valor
                     st.session_state["ubicacion_xsd_abc"] = st.text_input(
                         "📝 Ubicación XSD ABC",
-                        value=st.session_state["ubicacion_xsd_abc"],  # recupera siempre
+                        value=ubicacion_xsd_abc,  # recupera siempre
                         key="ubicacion_xsd_abc_input"
                     )
-                    
-                    
-                    
+
                     if not st.session_state["ubicacion_xsd_exp"]:
                         st.warning("⚠ Digita la ubicacion del xsd EXP.")
                         

@@ -2905,6 +2905,9 @@ def generar_proyecto():
         
         if "ubicacion_xsd_exp" in st.session_state:
             st.session_state["ubicacion_xsd_exp"] = ""
+            
+        if "ubicacion_xsd_abc" in st.session_state:
+            st.session_state["ubicacion_xsd_abc"] = ""
         
         if (st.session_state["tipo_servicio"] == "Existente" and st.session_state["jar_file"] and st.session_state["operation_name"]) or (st.session_state["tipo_servicio"] == "Nuevo" and st.session_state["service_name"] and st.session_state["operation_name"] and (st.session_state["exp_proyecto"] and st.session_state["nombre_capa_abc"])):
             st.markdown(
