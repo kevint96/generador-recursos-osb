@@ -3274,6 +3274,7 @@ def generar_proyecto():
                                 # Mostrar el XML problemático siempre que haya error
                                 with st.expander("Ver XML problemático", expanded=True):
                                     st.code(xml_debug, language="xml")
+                                    st.session_state["archivo_wsdl_exp"] = st.session_state["wsdl_text"]
                             
                             
                             st.session_state["namespace_wsdl_exp"], st.session_state["binding_wsdl_exp"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_exp"])
