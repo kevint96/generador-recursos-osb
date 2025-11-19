@@ -3965,6 +3965,8 @@ def main():
             
             if not st.session_state["operation_name"]:
                 st.warning("⚠ Digita el nombre de la operación.")
+            else:
+                st.session_state["operation_name_abc"] = st.session_state["operation_name"]
         
             st.session_state["version_proxy"] = st.selectbox(
             "Versión ABC",
