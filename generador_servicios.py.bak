@@ -3589,7 +3589,7 @@ def main():
         st.session_state["version_proxy"] = ""
         
     if "version_proxy_abc" not in st.session_state:
-        st.session_state["version_proxy_abc"] = ""
+        st.session_state["version_proxy_abc"] = "V2.1"
     
     if "nombre_capa_abc" not in st.session_state:
         st.session_state["nombre_capa_abc"] = ""
