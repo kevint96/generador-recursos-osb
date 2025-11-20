@@ -3593,10 +3593,7 @@ def main():
     
     if "nombre_capa_exp" not in st.session_state:
         st.session_state["nombre_capa_exp"] = ""
-        
-    if "nombre_capa_abc" not in st.session_state:
-        st.session_state["nombre_capa_abc"] = ""
-        
+            
     if "ruta_pipeline_exp" not in st.session_state:
         st.session_state["ruta_pipeline_exp"] = ""
         
@@ -3903,7 +3900,7 @@ def main():
                                 "Versión ABC",
                                 options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
                                 index=(
-                                    ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
+                                    ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"].index(st.session_state["version_proxy"])
                                     if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
                                     else 0
                                 ),
@@ -3921,7 +3918,9 @@ def main():
             
             if st.session_state["service_name"] == "No se detecto Proxie EXP":
                 st.warning("⚠ Debes subir el archivo .jar que contenga el proxy EXP.")
-
+            
+            if not st.session_state["nombre_capa_abc"]:
+                st.warning("⚠ Digita el nombre de la capa ABC.")
             #################################FIN#################################
             
         else:
