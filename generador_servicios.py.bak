@@ -3925,6 +3925,12 @@ def main():
                                 value=st.session_state["nombre_capa_abc"],  # recupera siempre
                                 key="nombre_capa_abc_input")
                                 
+                                capa_abc_seleccionada = st.selectbox(
+                                    "Carpeta ABC en el JAR",
+                                    carpetas_raiz,
+                                    key="capa_abc_seleccionada"
+                                )
+                                
                                 
                                 
                                 st.session_state["version_proxy_abc"] = st.selectbox(

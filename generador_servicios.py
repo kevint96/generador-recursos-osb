@@ -3683,11 +3683,11 @@ def main():
                     "/".join(proxy.split("/")[:-1]) + "/" for proxy in proxies_ebs
                 })
                 proxy_seleccionado = ""
-                capa_abc_seleccionada = st.selectbox(
-                    "Carpeta ABC en el JAR",
-                    carpetas_raiz,
-                    key="capa_abc_seleccionada"
-                )
+                # capa_abc_seleccionada = st.selectbox(
+                    # "Carpeta ABC en el JAR",
+                    # carpetas_raiz,
+                    # key="capa_abc_seleccionada"
+                # )
                 
                 if proxies_exp:
                     ubicacion_proxy = "/".join(proxies_exp[0].split("/")[:-1]) + "/"   # Carpeta (ubicación)
