@@ -3915,15 +3915,15 @@ def main():
                                         disabled=True
                                     )
                                 
-                                st.session_state["nombre_capa_abc"] = st.text_input(
-                                "Nombre capa ABC",
-                                value=st.session_state["nombre_capa_abc"],  # recupera siempre
-                                key="nombre_capa_abc_input")
+                                # st.session_state["nombre_capa_abc"] = st.text_input(
+                                # "Nombre capa ABC",
+                                # value=st.session_state["nombre_capa_abc"],  # recupera siempre
+                                # key="nombre_capa_abc_input")
                                 
-                                capa_abc_seleccionada = st.selectbox(
-                                    "Carpeta ABC en el JAR",
+                                st.session_state["nombre_capa_abc"] = st.selectbox(
+                                    "Nombre capa ABC",
                                     carpetas_raiz,
-                                    key="capa_abc_seleccionada"
+                                    key="nombre_capa_abc_input"
                                 )
                                 
                                 
