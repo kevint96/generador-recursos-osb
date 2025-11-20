@@ -3114,13 +3114,13 @@ def generar_proyecto():
                         
                         with st.expander("⚙️Generacion capa ABC", expanded=True):
                         
-                            st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
+                            st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy_abc"])}</h6>", unsafe_allow_html=True)
                             
-                            st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "proxy", st.session_state["version_proxy"])
+                            st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "proxy", st.session_state["version_proxy_abc"])
                             st.session_state["ubicacion_proxy_abc"] = st.session_state["nombre_capa_abc"]+"/Proxies/"+st.session_state["proxy_abc"]
-                            st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "pipeline", st.session_state["version_proxy"])
+                            st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "pipeline", st.session_state["version_proxy_abc"])
                             st.session_state["ubicacion_pipeline_abc"] = st.session_state["nombre_capa_abc"]+"/Pipeline/"+st.session_state["pipeline_abc"]
-                            st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "wsdl", st.session_state["version_proxy"])
+                            st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "wsdl", st.session_state["version_proxy_abc"])
                             st.session_state["ubicacion_wsdl_abc"] = st.session_state["nombre_capa_abc"]+"/Resources/WSDLs/"+st.session_state["wsdl_abc"]
                             
                             
@@ -3380,13 +3380,13 @@ def generar_proyecto():
 
                     with st.expander("⚙️Generacion capa ABC", expanded=True):
                     
-                        st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy"])}</h6>", unsafe_allow_html=True)
+                        st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy_abc"])}</h6>", unsafe_allow_html=True)
                         
-                        st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "proxy", st.session_state["version_proxy"])
+                        st.session_state["proxy_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "proxy", st.session_state["version_proxy_abc"])
                         st.session_state["ubicacion_proxy_abc"] = st.session_state["nombre_capa_abc"]+"/Proxies/"+st.session_state["proxy_abc"]
-                        st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "pipeline", st.session_state["version_proxy"])
+                        st.session_state["pipeline_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "pipeline", st.session_state["version_proxy_abc"])
                         st.session_state["ubicacion_pipeline_abc"] = st.session_state["nombre_capa_abc"]+"/Pipeline/"+st.session_state["pipeline_abc"]
-                        st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "wsdl", st.session_state["version_proxy"])
+                        st.session_state["wsdl_abc"] = generar_nombrado_abc(st.session_state["operation_name_abc"], "wsdl", st.session_state["version_proxy_abc"])
                         st.session_state["ubicacion_wsdl_abc"] = st.session_state["nombre_capa_abc"]+"/Resources/WSDLs/"+st.session_state["wsdl_abc"]
                         
                         
@@ -3587,6 +3587,9 @@ def main():
     
     if "version_proxy" not in st.session_state:
         st.session_state["version_proxy"] = ""
+        
+    if "version_proxy_abc" not in st.session_state:
+        st.session_state["version_proxy_abc"] = ""
     
     if "nombre_capa_abc" not in st.session_state:
         st.session_state["nombre_capa_abc"] = ""
@@ -3896,15 +3899,15 @@ def main():
                                 
                                 
                                 
-                                st.session_state["version_proxy"] = st.selectbox(
+                                st.session_state["version_proxy_abc"] = st.selectbox(
                                 "Versión ABC",
                                 options=["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"],
                                 index=(
-                                    ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"].index(st.session_state["version_proxy"])
-                                    if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V2.1", "V1.0","V1.1", "V1.2", "V2.0", "V2.2"]
+                                    ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"].index(st.session_state["version_proxy_abc"])
+                                    if "version_proxy_abc" in st.session_state and st.session_state["version_proxy_abc"] in ["V2.1", "V1.0","V1.1", "V1.2", "V2.0", "V2.2"]
                                     else 0
                                 ),
-                                key="version_proxy_input")
+                                key="version_proxy_abc_input")
                         
                 else:
                     st.session_state["service_name"] = st.text_input(
@@ -3971,12 +3974,12 @@ def main():
             else:
                 st.session_state["operation_name_abc"] = st.session_state["operation_name"]
         
-            st.session_state["version_proxy"] = st.selectbox(
+            st.session_state["version_proxy_abc"] = st.selectbox(
             "Versión ABC",
             options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
             index=(
-                ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy"])
-                if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+                ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_proxy_abc"])
+                if "version_proxy_abc" in st.session_state and st.session_state["version_proxy_abc"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
                 else 0
             ),
             key="version_proxy_input"

@@ -3922,8 +3922,6 @@ def main():
             if st.session_state["service_name"] == "No se detecto Proxie EXP":
                 st.warning("⚠ Debes subir el archivo .jar que contenga el proxy EXP.")
             
-            if st.session_state["service_name"] and st.session_state["operation_name"] and not st.session_state["nombre_capa_abc"]:
-                st.warning("⚠ Digita el nombre de la capa ABC.")
             #################################FIN#################################
             
         else:
@@ -3992,6 +3990,9 @@ def main():
 
         if st.button("Generar proyecto OSB"):
             st.session_state["generar_proyecto"] = True
+            
+            if st.session_state["service_name"] and st.session_state["operation_name"] and not st.session_state["nombre_capa_abc"]:
+                st.warning("⚠ Digita el nombre de la capa ABC.")
          
     with st.container():
         
