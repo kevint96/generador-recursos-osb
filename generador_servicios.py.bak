@@ -3919,7 +3919,7 @@ def main():
             if st.session_state["service_name"] == "No se detecto Proxie EXP":
                 st.warning("⚠ Debes subir el archivo .jar que contenga el proxy EXP.")
             
-            if not st.session_state["nombre_capa_abc"]:
+            if st.session_state["service_name"] and not st.session_state["nombre_capa_abc"]:
                 st.warning("⚠ Digita el nombre de la capa ABC.")
             #################################FIN#################################
             
