@@ -3901,7 +3901,7 @@ def main():
                                 options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
                                 index=(
                                     ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"].index(st.session_state["version_proxy"])
-                                    if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
+                                    if "version_proxy" in st.session_state and st.session_state["version_proxy"] in ["V2.1", "V1.0","V1.1", "V1.2", "V2.0", "V2.2"]
                                     else 0
                                 ),
                                 key="version_proxy_input")
