@@ -2625,7 +2625,7 @@ def exportar_proyecto_zip():
             st.download_button(
                 label="⬇️ Descargar Proyecto ZIP",
                 data=fp,
-                file_name=f"{st.session_state['service_name']}.zip",
+                file_name=f"{st.session_state['service_name']}-{st.session_state["operation_name"]}.zip",
                 mime="application/zip"
             )
 
@@ -2918,7 +2918,7 @@ def exportar_proyecto_jar():
         st.download_button(
             label="⬇️ Descargar Proyecto JAR",
             data=jar_buffer.getvalue(),
-            file_name=f"{st.session_state['service_name']}.jar",
+            file_name=f"{st.session_state['service_name']}-{st.session_state["operation_name"]}.jar",
             mime="application/java-archive"
         )
 # -------------------------------
