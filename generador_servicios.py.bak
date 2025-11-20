@@ -3992,7 +3992,7 @@ def main():
          
     with st.container():
         
-        if st.session_state["service_name"] and st.session_state["service_name"] != "No se detecto Proxie EXP" and st.session_state["nombre_capa_abc"]: != "":
+        if st.session_state["service_name"] and st.session_state["service_name"] != "No se detecto Proxie EXP" and st.session_state["nombre_capa_abc"] != "":
             generar_proyecto()
         
 
