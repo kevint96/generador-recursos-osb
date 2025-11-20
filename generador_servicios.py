@@ -3021,7 +3021,7 @@ def generar_proyecto():
 
                 # Campo editable que recuerda su valor
                 st.session_state["ubicacion_xsd_exp"] = st.text_input(
-                    "📝 Ubicación XSD EXP",
+                    "📝 Ubicación Raíz XSD EXP (Ejemplo: 'ComponentesComunes\Resources\Schemas\Servicios\BPMV2.1'",
                     value=st.session_state["ubicacion_xsd_exp"],  # recupera siempre
                     key="ubicacion_xsd_exp_input"
                 )
