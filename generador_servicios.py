@@ -3657,10 +3657,32 @@ def main():
                             
                 proxies_exp = capas_detectadas["EXP"]["Proxy"]
                 proxies_ebs = capas_detectadas["EBS"]["Proxy"]
+                proxies_abc = capas_detectadas["ABC"]["Proxy"]
+                
+                # Carpeta raíz detectada
+                carpetas_raiz = set()
+
+                for ruta in rutas:
+                    # Normalizar
+                    ruta_norm = ruta.replace("\\", "/")
+                    
+                    # Tomar solo el primer segmento
+                    carpeta = ruta_norm.split("/")[0]
+                    
+                    # Evitar agregar archivos sueltos o vacíos
+                    if carpeta.strip():
+                        carpetas_raiz.add(carpeta)
+                
                 rutas_proxies_ebs = list({
                     "/".join(proxy.split("/")[:-1]) + "/" for proxy in proxies_ebs
                 })
                 proxy_seleccionado = ""
+                capa_abc_seleccionada = st.selectbox(
+                    "Carpeta ABC en el JAR",
+                    carpetas_raiz,
+                    key="capa_abc_seleccionada"
+                )
+                
                 if proxies_exp:
                     ubicacion_proxy = "/".join(proxies_exp[0].split("/")[:-1]) + "/"   # Carpeta (ubicación)
                     
