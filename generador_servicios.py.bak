@@ -3673,6 +3673,12 @@ def main():
                     if carpeta.strip():
                         carpetas_raiz.add(carpeta)
                 
+                carpetas_raiz = sorted(list(carpetas_raiz))
+
+                # ❌ Remover carpeta ExportInfo
+                carpetas_raiz = [c for c in carpetas_raiz if c != "ExportInfo" or c != "UtilitariosEBS"]
+
+                
                 rutas_proxies_ebs = list({
                     "/".join(proxy.split("/")[:-1]) + "/" for proxy in proxies_ebs
                 })
