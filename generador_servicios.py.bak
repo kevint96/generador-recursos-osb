@@ -3608,7 +3608,7 @@ def main():
         )
 
         if st.session_state["tipo_servicio"] == "Existente":
-            jar_file = st.file_uploader("📦 Sube el archivo .jar del servicio existente", type=["jar"])
+            jar_file = st.file_uploader("📦 Sube el archivo .jar del servicio existente (.proxy con dependencias)", type=["jar"])
             
             # Diccionario de capas con tipos de archivo dentro
             capas = ["EXP", "EBS", "ABC"]
