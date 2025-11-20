@@ -3929,14 +3929,10 @@ def main():
                                 
                                 
                                 st.session_state["version_proxy_abc"] = st.selectbox(
-                                "Versión ABC",
-                                options=["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"],
-                                index=(
-                                    ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"].index(st.session_state["version_proxy_abc"])
-                                    if "version_proxy_abc" in st.session_state and st.session_state["version_proxy_abc"] in ["V2.1", "V1.0","V1.1", "V1.2", "V2.0", "V2.2"]
-                                    else 0
-                                ),
-                                key="version_proxy_abc")
+                                    "Versión ABC",
+                                    options=["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"],
+                                    key="version_proxy_abc"
+                                )
                         
                 else:
                     st.session_state["service_name"] = st.text_input(
