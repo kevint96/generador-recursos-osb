@@ -3675,8 +3675,8 @@ def main():
                 
                 carpetas_raiz = sorted(list(carpetas_raiz))
 
-                # ❌ Remover carpeta ExportInfo
-                carpetas_raiz = [c for c in carpetas_raiz if c != "ExportInfo" or c != "UtilitariosEBS"]
+                excluir = {"ExportInfo", "UtilitariosEBS"}
+                carpetas_raiz = [c for c in carpetas_raiz if c not in excluir]
 
                 
                 rutas_proxies_ebs = list({
