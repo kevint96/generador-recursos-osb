@@ -3603,7 +3603,7 @@ def main():
         
         # Radio para nuevo o existente
         st.session_state["tipo_servicio"] = st.radio(
-            "¿El servicio es nuevo o existente?",
+            "¿El servicio a exponer es nuevo o existente?",
             ("Nuevo", "Existente")
         )
 

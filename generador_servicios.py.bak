@@ -3867,7 +3867,7 @@ def main():
                                         )
                                         
                                     
-                            with st.expander("⚙️ CAPA ABC"):
+                            with st.expander("⚙️ CAPA ABC",expanded=True):
                                 
                                 st.radio(
                                     "¿Misma operacion ABC?",
