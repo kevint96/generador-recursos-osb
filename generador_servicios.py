@@ -3926,11 +3926,12 @@ def main():
                                     key="nombre_capa_abc_input"
                                 )
                                 
-                                
-                                
-                                st.session_state["version_proxy_abc"] = st.selectbox(
-                                "Versión ABC",
-                                options=["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"])
+
+                                st.selectbox(
+                                    "Versión ABC",
+                                    ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"],
+                                    key="version_proxy_abc"
+                                )
                         
                 else:
                     st.session_state["service_name"] = st.text_input(
