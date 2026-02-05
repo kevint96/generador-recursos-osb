@@ -3950,6 +3950,9 @@ def main():
             
         else:
             st.session_state["service_name"] = st.text_input("Nombre del servicio expuesto (sin espacios)", "")
+            
+            if not st.session_state["service_name"]:
+                st.warning("⚠ Digita el nombre del servicio.")
 
             # Lista de capas disponibles
             capas_disponibles = ["ABC", "EBS", "EXP"]
@@ -3960,10 +3963,7 @@ def main():
                 capas_disponibles,
                 default=["EXP", "ABC"]  # Puedes poner valores por defecto
             )
-            
-            if not st.session_state["service_name"]:
-                st.warning("⚠ Digita el nombre del servicio.")
-                
+    
             # --- Inputs dinámicos para proyectos por capa seleccionada ---
             proyectos_por_capa = {}
             # (Opcional) Guardar en session_state para usarlos después
