@@ -3971,6 +3971,9 @@ def main():
                     f"Nombre del proyecto para capa {capa}", 
                     key=f"proyecto_{capa}"  # clave única en session_state
                 )
+                
+                if not st.session_state["proyectos_por_capa"][capa]:
+                    st.warning(f"⚠ Digita el nombre de la capa {capa}")
 
             # (Opcional) Guardar en session_state para usarlos después
             st.session_state["proyectos_por_capa"] = proyectos_por_capa
