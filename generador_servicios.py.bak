@@ -3986,8 +3986,8 @@ def main():
                 elif capa == "ABC":
                     st.session_state["nombre_capa_abc"] = st.session_state["proyectos_por_capa"]["ABC"]
                     
-                if not st.session_state["proyectos_por_capa"][capa]:
-                    st.warning(f"⚠ Digita el nombre de la capa {capa}")
+                # if not st.session_state["proyectos_por_capa"][capa]:
+                    # st.warning(f"⚠ Digita el nombre de la capa {capa}")
                     
             operation_name = st.text_input("Nombre de la operación", "")
             

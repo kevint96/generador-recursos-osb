@@ -3966,25 +3966,34 @@ def main():
                 
             # --- Inputs dinámicos para proyectos por capa seleccionada ---
             proyectos_por_capa = {}
+            # (Opcional) Guardar en session_state para usarlos después
+            st.session_state["proyectos_por_capa"] = proyectos_por_capa
+            
             for capa in capas_seleccionadas:
                 proyectos_por_capa[capa] = st.text_input(
                     f"Nombre del proyecto para capa {capa}", 
                     key=f"proyecto_{capa}"  # clave única en session_state
                 )
-                
-                if not st.session_state["proyectos_por_capa"][capa]:
-                    st.warning(f"⚠ Digita el nombre de la capa {capa}")
-
-            # (Opcional) Guardar en session_state para usarlos después
-            st.session_state["proyectos_por_capa"] = proyectos_por_capa
-            
-            for capa in capas_seleccionadas:
                 if capa == "EXP":
                     st.session_state["exp_proyecto"] = st.session_state["proyectos_por_capa"]["EXP"]
                 elif capa == "EBS":
                     st.session_state["ebs_proyecto"] = st.session_state["proyectos_por_capa"]["EBS"]
                 elif capa == "ABC":
                     st.session_state["nombre_capa_abc"] = st.session_state["proyectos_por_capa"]["ABC"]
+                    
+                if not st.session_state["proyectos_por_capa"][capa]:
+                    st.warning(f"⚠ Digita el nombre de la capa {capa}")
+
+            # # (Opcional) Guardar en session_state para usarlos después
+            # st.session_state["proyectos_por_capa"] = proyectos_por_capa
+            
+            # for capa in capas_seleccionadas:
+                # if capa == "EXP":
+                    # st.session_state["exp_proyecto"] = st.session_state["proyectos_por_capa"]["EXP"]
+                # elif capa == "EBS":
+                    # st.session_state["ebs_proyecto"] = st.session_state["proyectos_por_capa"]["EBS"]
+                # elif capa == "ABC":
+                    # st.session_state["nombre_capa_abc"] = st.session_state["proyectos_por_capa"]["ABC"]
                     
                 # if not st.session_state["proyectos_por_capa"][capa]:
                     # st.warning(f"⚠ Digita el nombre de la capa {capa}")
