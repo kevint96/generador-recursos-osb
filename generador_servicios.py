@@ -3358,7 +3358,7 @@ def generar_proyecto():
                                 st.session_state["operation_name"],
                                 st.session_state["targetnamespace"],
                                 os.path.normpath(st.session_state["ubicacion_xsd_exp"]).rsplit('.', 1)[0].replace("\\", "/"),
-                                os.path.normpath(ubicacion_proxy_destino.rsplit('.', 1)[0].replace("\\", "/")
+                                os.path.normpath(ubicacion_proxy_destino).rsplit('.', 1)[0].replace("\\", "/")
                             )
                             st.code(st.session_state["archivo_pipeline_exp"], language="xml")
                             
