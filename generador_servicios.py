@@ -908,7 +908,9 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
 		</con:actions>
 	</con:stage>
 	<con:stage name="stg_respaldarEntrada" id="_StageId-ad48659.N6b80025f.0.198e784c905.N7f53">
-		<con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
+		<con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+            <con1:userNsDecl prefix="v13" namespace="{targetnamespace}"/>                                                                                                                                       
+        </con:context>                                                                                                                                   
 		<con:actions>
 			<con3:assign varName="mensajeEntradaExp" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
 				<con2:id>_ActionId-ad48659.N6b80025f.0.198e784c905.N7f52</con2:id>
