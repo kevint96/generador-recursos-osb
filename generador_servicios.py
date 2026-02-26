@@ -908,9 +908,7 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
 		</con:actions>
 	</con:stage>
 	<con:stage name="stg_respaldarEntrada" id="_StageId-ad48659.N6b80025f.0.198e784c905.N7f53">
-		<con:context>
-			<con1:userNsDecl prefix="v13" namespace="{targetnamespace}" xmlns:con1="http://www.bea.com/wli/sb/stages/config"/>
-		</con:context>
+		<con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
 		<con:actions>
 			<con3:assign varName="mensajeEntradaExp" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
 				<con2:id>_ActionId-ad48659.N6b80025f.0.198e784c905.N7f52</con2:id>
@@ -922,16 +920,14 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
 	</con:stage>
 	<con:stage name="stg_validarEntrada" id="_StageId-ad48659.N6b80025f.0.198e784c905.N7f51">
 		<con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
-			<con1:userNsDecl prefix="v13" namespace="{targetnamespace}"/>
-		</con:context>
 		<con:actions>
 			<con3:validate xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
 				<con2:id>_ActionId-ad48659.N6b80025f.0.198e784c905.N7f50</con2:id>
 				<con3:schema ref="{ubicacion_xsd_exp}"/>
-				<con3:schemaElement xmlns:v13="{targetnamespace}">v13:{op_name}Request</con3:schemaElement>
+				<con3:schemaElement xmlns:v1="{targetnamespace}">v1:{op_name}Request</con3:schemaElement>
 				<con3:varName>body</con3:varName>
 				<con3:location>
-					<con2:xpathText>./v13:{op_name}Request</con2:xpathText>
+					<con2:xpathText>./*</con2:xpathText>
 				</con3:location>
 			</con3:validate>
 		</con:actions>
@@ -940,8 +936,6 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
     <con:pipeline name="{op_name}-response-ad48659.N6b80025f.0.198e784c905.N7f4f" type="response">
         <con:stage name="stg_validarSalida" id="_StageId-ad48659.N6b80025f.0.198e784c905.N7f4e">
             <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
-				<con1:userNsDecl prefix="v13" namespace="{targetnamespace}"/>
-            </con:context>
             <con:actions>
                 <con3:validate xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
                     <con2:id>_ActionId-ad48659.N6b80025f.0.198e784c905.N7f4d</con2:id>
@@ -949,7 +943,7 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
                     <con3:schemaElement xmlns:v1="{targetnamespace}">v1:{op_name}Response</con3:schemaElement>
                     <con3:varName>body</con3:varName>
                     <con3:location>
-                        <con2:xpathText>./v1:{op_name}Response</con2:xpathText>
+                        <con2:xpathText>./*</con2:xpathText>
                     </con3:location>
                 </con3:validate>
             </con:actions>
@@ -1045,7 +1039,7 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
             </con:actions>
         </con:stage>
     </con:pipeline>"""
-
+    
     # Insertar antes de <con:flow>
     #pipeline_text = re.sub(r'(?=<con:flow)', nuevos_pipelines + "\n", pipeline_text, 1)
     pipeline_text = re.sub(r'(?=<con:flow)', lambda m: nuevos_pipelines + "\n", pipeline_text, 1)
