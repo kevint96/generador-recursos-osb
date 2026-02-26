@@ -1777,7 +1777,7 @@ def crear_pipeline_abc(wsdl_ref: str, binding_wsdl: str, namespace_wsdl: str, op
 def generar_nombrado_abc(nombre, tipo="proxy", version="V1.0"):
     import re
     # 1. Convertir CamelCase → SNAKE_CASE
-    snake = re.sub(r'(?<!^)(?=[A-Z])', '_', nombre).upper().strip()
+    snake = re.sub(r'(?<=[a-z0-9])(?=[A-Z])', '_', nombre).upper().strip()
     extension = ""
     
     # 2. Prefijo según tipo
