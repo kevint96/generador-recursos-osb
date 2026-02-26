@@ -3657,7 +3657,7 @@ def main():
                                         )
                                         
                                     
-                            with st.expander("⚙️ CAPA ABC",expanded=True):
+                            with st.expander("⚙️ CAPA ABC 1",expanded=True):
                                 
                                 st.radio(
                                     "¿Misma operacion ABC?",
@@ -3696,6 +3696,32 @@ def main():
                                     ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"],
                                     key="version_proxy_abc"
                                 )
+                                
+                                
+                            with st.expander("⚙️ CAPA ABC 2"):
+                                st.radio(
+                                    "¿Requiere crear capa ABC #2?",
+                                    options=["NO", "SI"],
+                                    index=0,
+                                    horizontal=True,
+                                    key="requiere_abc2"
+                                )
+
+                                if st.session_state.get("requiere_abc2") == "SI":
+                                    
+                                    operation_name_abc2 = st.text_input("Nombre de la operación ABC #2", "")
+                                    st.session_state["operation_name_abc2"] = operation_name_abc2.strip()
+                                    
+                                    st.session_state["nombre_capa_abc2"] = st.selectbox(
+                                    "Nombre capa ABC #2",
+                                    carpetas_raiz,
+                                    key="nombre_capa_abc2_input")
+                                
+
+                                    st.selectbox(
+                                        "Versión ABC",
+                                        ["V2.1", "V1.0","V1.1", "V1.2", "V2.0","V2.2"],
+                                        key="version_proxy_abc2")
                         
                 else:
                     st.session_state["service_name"] = st.text_input(
