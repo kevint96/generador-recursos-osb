@@ -425,15 +425,27 @@ def agregar_operacion_wsdl(wsdl_content, wsdl_path, target_namespace, xsd_path,
     wsdl_dir = os.path.dirname(wsdl_path)
     rel_path_str = os.path.relpath(xsd_path, wsdl_dir).replace("\\", "/")
 
-    schema = ET.Element(f"{XSD}schema")
-    attribs = OrderedDict()
-    attribs["schemaLocation"] = rel_path_str
-    attribs["namespace"] = target_namespace
-    ET.SubElement(schema, f"{XSD}import", attrib=attribs)
-    
-    # 👇 Aplicar indentación SOLO a este bloque
-    aplicar_indent_local(schema, nivel=2)
-    types.append(schema)
+    # Buscar schema existente dentro de types
+    schema = types.find(f"{XSD}schema")
+
+    if schema is None:
+        # Si no existe, crearlo
+        schema = ET.SubElement(types, f"{XSD}schema")
+
+    # Verificar que no exista ya el import
+    import_existente = schema.find(
+        f"{XSD}import[@namespace='{target_namespace}']"
+    ) or schema.find(
+        f"{XSD}import[@schemaLocation='{rel_path_str}']"
+    )
+
+    if import_existente is None:
+        attribs = OrderedDict()
+        attribs["schemaLocation"] = rel_path_str
+        attribs["namespace"] = target_namespace
+
+        nuevo_import = ET.SubElement(schema, f"{XSD}import", attrib=attribs)
+        aplicar_indent_local(nuevo_import, nivel=3)
 
     # 2) Mensajes
     msg_in  = ET.SubElement(root, f"{WSDL}message", {"name": input_msg})
