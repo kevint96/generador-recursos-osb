@@ -909,7 +909,7 @@ def agregar_operacion_pipeline(pipeline_text, op_name, targetnamespace,ubicacion
 	</con:stage>
 	<con:stage name="stg_respaldarEntrada" id="_StageId-ad48659.N6b80025f.0.198e784c905.N7f53">
 		<con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-            <con1:userNsDecl prefix="v13" namespace="{targetnamespace}"/>                                                                                                                                       
+            <con2:userNsDecl prefix="v13" namespace="{targetnamespace}"/>                                                                                                                                       
         </con:context>                                                                                                                                   
 		<con:actions>
 			<con3:assign varName="mensajeEntradaExp" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
@@ -2027,258 +2027,103 @@ def crear_pipeline_ebs(wsdl_ref: str, binding_wsdl: str, namespace_wsdl: str, op
         </con:coreEntry>
         <con:router errorHandler="error-ad486dc.N127d0eee.0.172040c1caf.N7dce">
         <con:pipeline name="error-ad486dc.N127d0eee.0.172040c1caf.N7dce" type="error">
-            <con:stage name="stg_transformarMensajeError">
-                <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config"/>
+            <con:stage name="stg_transformarMensajeError" id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N783f" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+                <con:context xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
                 <con:actions>
-                    <con4:replace varName="manejarErrorRequest" contents-only="false" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                        <con1:id>_ActionId-ad486dc.N127d0eee.0.172040c1caf.N7cfe</con1:id>
-                        <con2:expr>
-                            <con5:xqueryTransform xmlns:con5="http://www.bea.com/wli/sb/stages/config">
-                                <con5:resource ref="ComponentesComunes/Resources/XQUERYs/xq_operacion_to_manejarError"/>
-                                <con5:param name="tns">
-                                    <con5:path>data($espacioNombreABC)</con5:path>
-                                </con5:param>
-                                <con5:param name="fault">
-                                    <con5:path>$fault/*</con5:path>
-                                </con5:param>
-                                <con5:param name="prefijo">
-                                    <con5:path>data($prefijoABC)</con5:path>
-                                </con5:param>
-                                <con5:param name="operacion">
-                                    <con5:path>data($operation)</con5:path>
-                                </con5:param>
-                                <con5:param name="body">
-                                    <con5:path>$body/*</con5:path>
-                                </con5:param>
-                            </con5:xqueryTransform>
-                        </con2:expr>
-                    </con4:replace>
-                    <con4:wsCallout xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                        <con1:id>_ActionId-ad486dc.N127d0eee.0.172040c1caf.N7cfd</con1:id>
-                        <con2:service ref="ComponentesComunes/Proxies/PS_ManejadorGenericoErroresV1.0" xsi:type="ref:ProxyRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
-                        <con2:operation>manejarError</con2:operation>
-                        <con2:request>
-                            <con2:body wrapped="false">manejarErrorRequest</con2:body>
-                        </con2:request>
-                        <con2:response>
-                            <con2:body wrapped="false">manejarErrorResponse</con2:body>
-                        </con2:response>
-                        <con2:requestTransform/>
-                        <con2:responseTransform/>
-                    </con4:wsCallout>
+                    <con3:replace varName="manejarErrorRequest" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N783e</con1:id>
+                        <con3:expr>
+                            <con1:xqueryTransform>
+                                <con1:resource ref="ComponentesComunes/Resources/XQUERYs/xq_operacion_to_manejarError"/>
+                                <con1:param name="tns">
+                                    <con1:path>data($espacioNombreEBS)</con1:path>
+                                </con1:param>
+                                <con1:param name="fault">
+                                    <con1:path>$fault/*</con1:path>
+                                </con1:param>
+                                <con1:param name="prefijo">
+                                    <con1:path>data($prefijoEBS)</con1:path>
+                                </con1:param>
+                                <con1:param name="operacion">
+                                    <con1:path>data($operation)</con1:path>
+                                </con1:param>
+                                <con1:param name="body">
+                                    <con1:path>$body/*</con1:path>
+                                </con1:param>
+                            </con1:xqueryTransform>
+                        </con3:expr>
+                    </con3:replace>
+                    <con3:wsCallout xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N783d</con1:id>
+                        <con3:service ref="ComponentesComunes/Proxies/PS_ManejadorGenericoErroresV1.0" xsi:type="ref:ProxyRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                        <con3:operation>manejarError</con3:operation>
+                        <con3:request>
+                            <con3:body wrapped="false">manejarErrorRequest</con3:body>
+                        </con3:request>
+                        <con3:response>
+                            <con3:body wrapped="false">manejarErrorResponse</con3:body>
+                        </con3:response>
+                        <con3:requestTransform/>
+                        <con3:responseTransform/>
+                    </con3:wsCallout>
                 </con:actions>
             </con:stage>
-            <con:stage name="stg_transformarSalida">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config"/>
+            <con:stage name="stg_transformarSalida" id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N77d7" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+                <con:context xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
                 <con:actions>
-                    <con2:replace contents-only="true" varName="body" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                        <con1:id>_ActionId-ad486dc.N127d0eee.0.172040c1caf.N7c63</con1:id>
-                        <con2:expr>
-                            <con1:xqueryText xmlns:con5="http://www.bea.com/wli/sb/stages/config">$manejarErrorResponse</con1:xqueryText>
-                        </con2:expr>
-                    </con2:replace>
+                    <con3:replace varName="body" contents-only="true" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N77d6</con1:id>
+                        <con3:expr>
+                            <con1:xqueryText>$manejarErrorResponse</con1:xqueryText>
+                        </con3:expr>
+                    </con3:replace>
                 </con:actions>
             </con:stage>
-            <con:stage name="stg_transformacionBody">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                    <con2:userNsDecl prefix="v11" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Cabeceras/V1.0"/>
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/crearCuentaPasivo/v1.0"/>
-                </con:context>
+            <con:stage name="stg_responder" id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N7770" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+                <con:context xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
                 <con:actions>
-                    <con5:replace varName="transformacionBody" contents-only="false" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                        <con2:id>_ActionId-ad486cf.508f513.0.17624fa7dcd.N6529</con2:id>
-                        <con1:expr>
-                            <con2:xqueryTransform>
-                                <con2:resource ref="ComponentesComunes/Resources/XQUERYs/xq_Auditoria_to_RegistrarAuditoriaSOA"/>
-                                <con2:param name="codigoError">
-                                    <con2:path>if(data($body/*:cabeceraSalida/*:tipoRespuesta) = "OK")
-    then ("00") 
-    else data($body/*:cabeceraSalida/*:respuestaError/*:codigoError)</con2:path>
-                                </con2:param>
-                                <con2:param name="horaInicialTX">
-                                    <con2:path>$horaInicialTx</con2:path>
-                                </con2:param>
-                                <con2:param name="mensajeResponse">
-                                    <con2:path>$manejarErrorResponse</con2:path>
-                                </con2:param>
-                                <con2:param name="mensajeRequest">
-                                    <con2:path>$mensajeEntradaABC</con2:path>
-                                </con2:param>
-                                <con2:param name="pId">
-                                    <con2:path>if ($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:procesoId and fn:data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:procesoId)!='') then
-      fn:data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:procesoId)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="nombreFlujo">
-                                    <con2:path>fn:concat("","ABC ",$operacionABC)</con2:path>
-                                </con2:param>
-                                <con2:param name="archivoResponse">
-                                    <con2:path>""</con2:path>
-                                </con2:param>
-                                <con2:param name="archivoRequest">
-                                    <con2:path>""</con2:path>
-                                </con2:param>
-                                <con2:param name="oficina">
-                                    <con2:path>if ($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:codigoOficina and fn:data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:codigoOficina)!='') then
-      data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:codigoOficina)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="numeroReferencia">
-                                    <con2:path>if ($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:numeroSolicitud and fn:data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:numeroSolicitud)!='') then
-      data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:numeroSolicitud)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="tipoError">
-                                    <con2:path>if ($manejarErrorResponse/*:cabeceraSalida/*:respuestaError/*:tipoError and fn:data($manejarErrorResponse/*:cabeceraSalida/*:respuestaError/*:tipoError)!='') then
-      data($manejarErrorResponse/*:cabeceraSalida/*:respuestaError/*:tipoError)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="usuario">
-                                    <con2:path>if ($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:usuario and fn:data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:usuario)!='') then
-      data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:usuario)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="id">
-                                    <con2:path>if ($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:identificadorTx and fn:data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:identificadorTx)!='') then
-      data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:identificadorTx)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="descripcionError">
-                                    <con2:path>data($fault/*)</con2:path>
-                                </con2:param>
-                                <con2:param name="infoAdicional3">
-                                    <con2:path>fn:concat("CANAL: ",data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:canalOrigen)," SUBCANAL: ",data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:subcanal))</con2:path>
-                                </con2:param>
-                                <con2:param name="descripcionTipoError">
-                                    <con2:path>" "</con2:path>
-                                </con2:param>
-                                <con2:param name="infoAdicional2">
-                                    <con2:path>fn:concat("NUMEROSOLICITUD: ",data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:numeroSolicitud))</con2:path>
-                                </con2:param>
-                                <con2:param name="infoAdicional1">
-                                    <con2:path>fn:concat("CODIGOCLIENTE: ",data($mensajeEntradaABC/*:cabeceraEntrada/*:invocador/*:codigoCliente))</con2:path>
-                                </con2:param>
-                                <con2:param name="codigoRespuesta">
-                                    <con2:path>if ($manejarErrorResponse/*:cabeceraSalida/*:tipoRespuesta and fn:data($manejarErrorResponse/*:cabeceraSalida/*:tipoRespuesta)!='') then
-      data($manejarErrorResponse/*:cabeceraSalida/*:tipoRespuesta)
-    else(' ')</con2:path>
-                                </con2:param>
-                            </con2:xqueryTransform>
-                        </con1:expr>
-                    </con5:replace>
-                </con:actions>
-            </con:stage>
-            <con:stage name="stg_auditarMensaje">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                    <con2:userNsDecl prefix="v12" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Cliente/V1.0"/>
-                    <con2:userNsDecl prefix="v11" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Solicitud/V1.0"/>
-                    <con2:userNsDecl prefix="v13" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Persona/V1.0"/>
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/crearTarjetaCredito/v1.0"/>
-                </con:context>
-                <con:actions>
-                    <con4:route xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad486cf.508f513.0.17624fa7dcd.N6531</con2:id>
-                        <con4:service ref="UtilitariosEBS/Proxies/AuditoriaSOA/RegistrarAuditoriaSOADATV1.0" xsi:type="ref:ProxyRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
-                        <con4:operation>registrarAuditoria</con4:operation>
-                        <con4:outboundTransform>
-                            <con5:replace contents-only="true" varName="body" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
-                                <con2:id>_ActionId-ad486cf.508f513.0.17624fa7dcd.N6530</con2:id>
-                                <con5:expr>
-                                    <con2:xqueryText>$transformacionBody</con2:xqueryText>
-                                </con5:expr>
-                            </con5:replace>
-                        </con4:outboundTransform>
-                    </con4:route>
-                </con:actions>
-            </con:stage>
-            <con:stage name="stg_responder">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config"/>
-                <con:actions>
-                    <con1:reply xmlns:con4="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                        <con1:id>_ActionId-ad486dc.N127d0eee.0.172040c1caf.N7bf7</con1:id>
+                    <con1:reply xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N776f</con1:id>
                     </con1:reply>
                 </con:actions>
             </con:stage>
         </con:pipeline>
         <con:pipeline name="request-ad486dc.N127d0eee.0.172040c1caf.N7b8f" type="request">
-            <con:stage name="stg_inicializarVariables" id="_StageId-ad48653.391527db.0.1954e682498.N76db">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:con4="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config"/>
+            <con:stage id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N7c47" name="stg_inicializarVariables" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                <con:context>
+                    <con1:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/registrarInfoGenesys/v1.0"/>
+                </con:context>
                 <con:actions>
-                    <con3:assign varName="tns" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:con4="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N76d9</con2:id>
+                    <con3:assign varName="espacioNombreEBS">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N7c46</con1:id>
                         <con3:expr>
-                            <con2:xqueryText>fn:namespace-uri($body/*)</con2:xqueryText>
+                            <con1:xqueryText>fn:namespace-uri($body/*)</con1:xqueryText>
                         </con3:expr>
                     </con3:assign>
-                    <con3:assign varName="prefijo" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:con4="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N76d8</con2:id>
+                    <con3:assign varName="prefijoEBS">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N7c45</con1:id>
                         <con3:expr>
-                            <con2:xqueryText>"srvabc"</con2:xqueryText>
+                            <con1:xqueryText>"srvebs"</con1:xqueryText>
                         </con3:expr>
                     </con3:assign>
-                    <con1:assign varName="operacionABC" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N76d7</con2:id>
-                        <con1:expr>
-                            <con2:xqueryText>&lt;operacionABC>{{$operation}}&lt;/operacionABC></con2:xqueryText>
-                        </con1:expr>
-                    </con1:assign>
-                    <con5:assign varName="horaInicialTx" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N76d6</con2:id>
-                        <con5:expr>
-                            <con2:xqueryText>fn:replace(fn:string( fn:current-dateTime()) , "T" ," ")</con2:xqueryText>
-                        </con5:expr>
-                    </con5:assign>
-                    <con3:assign varName="mensajeEntradaAbc" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N76d5</con2:id>
+                    <con3:assign varName="operacionEBS">
+                        <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N7c44</con1:id>
                         <con3:expr>
-                            <con2:xqueryText>$body</con2:xqueryText>
-                        </con3:expr>
-                    </con3:assign>
-                    <con2:assign varName="mensajeEntradaCompleto" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
-                        <con1:id>_ActionId-ad48653.391527db.0.1954e682498.N76d4</con1:id>
-                        <con2:expr>
-                            <con1:xqueryText><![CDATA[<Request>
-        <MensajeEntradaABC>
-        
-        </MensajeEntradaABC>
-        <MensajeEntradaLegado>
-        
-        </MensajeEntradaLegado>
-    </Request>]]></con1:xqueryText>
-                        </con2:expr>
-                    </con2:assign>
-                    <con2:assign varName="mensajeSalidaCompleto" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
-                        <con1:id>_ActionId-ad48653.391527db.0.1954e682498.N76d3</con1:id>
-                        <con2:expr>
-                            <con1:xqueryText><![CDATA[<Response>
-        <MensajeSalidaABC>
-        
-        </MensajeSalidaABC>
-        <MensajeSalidaLegado>
-        
-        </MensajeSalidaLegado>
-    </Response>]]></con1:xqueryText>
-                        </con2:expr>
-                    </con2:assign>
-                    <con3:assign varName="operacionABCnode" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N76d2</con2:id>
-                        <con3:expr>
-                            <con2:xqueryText>fn:substring-after(fn:replace(fn:string(fn:node-name($body/*)),'Request',''),':')</con2:xqueryText>
+                            <con1:xqueryText>&lt;operacionEBS>{$operation}&lt;/operacionEBS></con1:xqueryText>
                         </con3:expr>
                     </con3:assign>
                 </con:actions>
             </con:stage>
-            <con:stage name="stg_respaldarEntradaComun">
+            <con:stage id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N7bdd" name="stg_respaldarEntrada" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
                 <con:context>
-                    <con1:userNsDecl prefix="v11" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/consultarInfoGeneralIbr/v1.0" xmlns:con1="http://www.bea.com/wli/sb/stages/config"/>
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/crearTarjetaCredito/v1.0" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config"/>
+                    <con2:userNsDecl prefix="v11" namespace="{namespace_wsdl}"/>
                 </con:context>
                 <con:actions>
-                    <con3:assign varName="mensajeEntradaABC" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad486e3.73c58b67.0.1720fe3b9a5.N7dac</con2:id>
-                        <con3:expr>
-                            <con2:xqueryText>$body/*</con2:xqueryText>
-                        </con3:expr>
+                    <con3:assign varName="mensajeEntradaEBS" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con2:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N7bdc</con2:id>
+                        <con1:expr>
+                            <con2:xqueryText>$body/v11:{operation_name}Request</con2:xqueryText>
+                        </con1:expr>
                     </con3:assign>
                 </con:actions>
             </con:stage>
@@ -2296,196 +2141,107 @@ def crear_pipeline_ebs(wsdl_ref: str, binding_wsdl: str, namespace_wsdl: str, op
                     </con3:replace>
                 </con:actions>
             </con:stage>
-            <con:stage name="stg_respaldarEntradaLegado">
-                <con:context xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/crearTarjetaCredito/v1.0"/>
-                </con:context>
-                <con:actions>
-                    <con3:assign varName="mensajeEntradaABCLegado" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad486e3.73c58b67.0.1720fe3b9a5.N7d44</con2:id>
-                        <con3:expr>
-                            <con2:xqueryText>$body</con2:xqueryText>
-                        </con3:expr>
-                    </con3:assign>
-                    <con1:insert varName="mensajeEntradaCompleto" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-ad48653.391527db.0.1954e682498.N778a</con2:id>
-                        <con1:location>
-                            <con2:xpathText xmlns:con2="http://www.bea.com/wli/sb/stages/config">./*:MensajeEntradaABC</con2:xpathText>
-                        </con1:location>
-                        <con1:where>first-child</con1:where>
-                        <con1:expr>
-                            <con2:xqueryText xmlns:con2="http://www.bea.com/wli/sb/stages/config">$mensajeEntradaABC</con2:xqueryText>
-                        </con1:expr>
-                    </con1:insert>
-                    <con1:insert varName="mensajeEntradaCompleto" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-ad48653.391527db.0.1954e682498.N76cf</con2:id>
-                        <con1:location>
-                            <con2:xpathText xmlns:con2="http://www.bea.com/wli/sb/stages/config">./*:MensajeEntradaLegado</con2:xpathText>
-                        </con1:location>
-                        <con1:where>first-child</con1:where>
-                        <con1:expr>
-                            <con2:xqueryText xmlns:con2="http://www.bea.com/wli/sb/stages/config">$mensajeEntradaABCLegado</con2:xqueryText>
-                        </con1:expr>
-                    </con1:insert>
-                </con:actions>
-            </con:stage>
         </con:pipeline>
         <con:pipeline name="response-ad486dc.N127d0eee.0.172040c1caf.N7b8e" type="response">
-            <con:stage name="stg_transformacionSalida">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/consultarCarpeta/v1.0"/>
-                    <con2:varNsDecl prefix="v11" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/consultarInfoGeneralIbr/v1.0"/>
-                </con:context>
-                <con:actions>
-                    <con5:assign varName="mensajeSalidaABCLegado" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N74f8</con2:id>
-                        <con3:expr>
-                            <con:xqueryText xmlns:con="http://www.bea.com/wli/sb/stages/config">$body/*</con:xqueryText>
-                        </con3:expr>
-                    </con5:assign>
-                    <con3:replace varName="body" contents-only="true" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad486dc.N127d0eee.0.172040c1caf.N7b22</con2:id>
-                        <con3:expr>
-                            <con2:xqueryText>$body</con2:xqueryText>
-                        </con3:expr>
-                    </con3:replace>
-                </con:actions>
+            <con:stage id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N7a42" name="stg_transformacionSalida" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+                <con:context/>
+                <con:actions></con:actions>
             </con:stage>
-            <con:stage name="stg_transformacionBody" id="_StageId-ad48653.391527db.0.1954e682498.N75fe">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                    <con2:userNsDecl prefix="v12" namespace="http://xmlns.bancocajasocial.com/co/canales/schemas/servicios/AperturaEncFiduciario/v1.0"/>
-                    <con2:userNsDecl prefix="v11" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Cabeceras/V1.0"/>
-                    <con2:userNsDecl prefix="v14" namespace="http://xmlns.bancocajasocial.com/co/canales/schemas/AperturaEncFiduciario/v1.0"/>
-                    <con2:userNsDecl prefix="v13" namespace="http://xmlns.bancocajasocial.com/co/canales/schemas/entidades/detalleFiduciaria/v1.0"/>
-                    <con2:userNsDecl prefix="v16" namespace="http://xmlns.bancocajasocial.com/co/canales/schemas/abc/AperturaEncargoFid/v1.0"/>
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/crearCuentaPasivo/v1.0"/>
-                    <con2:userNsDecl prefix="v15" namespace="http://xmlns.bancocajasocial.com/co/canales/schemas/entidades/Cabeceras/v1.0"/>
-                </con:context>
+            <con:stage id="_StageId-ad48653.N78f153f3.0.19c95c8130c.N79a0" name="stg_auditarEBS" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                <con:context/>
                 <con:actions>
-                    <con5:assign varName="mensajeSalidaABC" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N75fd</con2:id>
-                        <con3:expr>
-                            <con2:xqueryText>$body/*</con2:xqueryText>
-                        </con3:expr>
-                    </con5:assign>
-                    <con1:insert varName="mensajeSalidaCompleto" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-ad48653.391527db.0.1954e682498.N75fc</con2:id>
-                        <con1:location>
-                            <con2:xpathText xmlns:con2="http://www.bea.com/wli/sb/stages/config">./*:MensajeSalidaABC</con2:xpathText>
-                        </con1:location>
-                        <con1:where>first-child</con1:where>
+                    <con1:replace varName="transformacionBody" contents-only="false" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con2:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N799f</con2:id>
                         <con1:expr>
-                            <con2:xqueryText xmlns:con2="http://www.bea.com/wli/sb/stages/config">$mensajeSalidaABC</con2:xqueryText>
-                        </con1:expr>
-                    </con1:insert>
-                    <con1:insert varName="mensajeSalidaCompleto" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-ad48653.391527db.0.1954e682498.N75fb</con2:id>
-                        <con1:location>
-                            <con2:xpathText xmlns:con2="http://www.bea.com/wli/sb/stages/config">./*:MensajeSalidaLegado</con2:xpathText>
-                        </con1:location>
-                        <con1:where>first-child</con1:where>
-                        <con1:expr>
-                            <con2:xqueryText xmlns:con2="http://www.bea.com/wli/sb/stages/config">$mensajeSalidaABCLegado</con2:xqueryText>
-                        </con1:expr>
-                    </con1:insert>
-                    <con1:replace varName="transformacionBody" contents-only="false" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N75fa</con2:id>
-                        <con1:expr>
-                            <con2:xqueryTransform>
-                                <con2:resource ref="ComponentesComunes/Resources/XQUERYs/xq_Auditoria_to_RegistrarAuditoriaSOA"/>
-                                <con2:param name="codigoError">
-                                    <con2:path>if ($body/*/*:cabeceraSalida/*:respuestaError/*:codigoError and fn:data($body/*/*:cabeceraSalida/*:respuestaError/*:codigoError)!='') then
-      fn:data($body/*/*:cabeceraSalida/*:respuestaError/*:codigoError)
-    else('-')</con2:path>
-                                </con2:param>
-                                <con2:param name="horaInicialTX">
-                                    <con2:path>$horaInicialTx</con2:path>
-                                </con2:param>
-                                <con2:param name="mensajeResponse">
-                                    <con2:path>$mensajeSalidaCompleto</con2:path>
-                                </con2:param>
-                                <con2:param name="mensajeRequest">
-                                    <con2:path>$mensajeEntradaCompleto</con2:path>
-                                </con2:param>
-                                <con2:param name="pId">
-                                    <con2:path>if ($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:procesoId and fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:procesoId)!='') then
-      fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:procesoId)
-    else('-')</con2:path>
-                                </con2:param>
-                                <con2:param name="nombreFlujo">
-                                    <con2:path>fn:concat($operacionABC,"ABC")</con2:path>
-                                </con2:param>
-                                <con2:param name="archivoResponse">
-                                    <con2:path>" "</con2:path>
-                                </con2:param>
-                                <con2:param name="archivoRequest">
-                                    <con2:path>" "</con2:path>
-                                </con2:param>
-                                <con2:param name="oficina">
-                                    <con2:path>if ($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:codigoOficina and fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:codigoOficina)!='') then
-      fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:codigoOficina)
-    else('-')</con2:path>
-                                </con2:param>
-                                <con2:param name="numeroReferencia">
-                                    <con2:path>if ($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:numeroSolicitud and fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:numeroSolicitud)!='') then
-      fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:numeroSolicitud)
-    else(' ')</con2:path>
-                                </con2:param>
-                                <con2:param name="tipoError">
-                                    <con2:path>data($body/*/*:cabeceraSalida/*:respuestaError/*:tipoError)</con2:path>
-                                </con2:param>
-                                <con2:param name="usuario">
-                                    <con2:path>if ($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:usuario and fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:usuario)!='') then
-      fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:usuario)
-    else('-')</con2:path>
-                                </con2:param>
-                                <con2:param name="id">
-                                    <con2:path>if ($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:identificadorTx and fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:identificadorTx)!='') then
-      fn:data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:identificadorTx)
-    else('-')</con2:path>
-                                </con2:param>
-                                <con2:param name="descripcionError">
-                                    <con2:path>data($body/*/*:cabeceraSalida/*:respuestaError/*:descripcionError)</con2:path>
-                                </con2:param>
-                                <con2:param name="infoAdicional3">
-                                    <con2:path>" "</con2:path>
-                                </con2:param>
-                                <con2:param name="descripcionTipoError">
-                                    <con2:path>data($body/*/*:cabeceraSalida/*:respuestaError/*:descripcionError)</con2:path>
-                                </con2:param>
-                                <con2:param name="infoAdicional2">
-                                    <con2:path>fn:concat("CANAL: ",data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:canalOrigen), " | SUBCANAL: ", data($mensajeEntradaAbc/*/*:cabeceraEntrada/*:invocador/*:subcanal))</con2:path>
-                                </con2:param>
-                                <con2:param name="infoAdicional1">
-                                    <con2:path>fn:concat("NOMBREPROCESO :", data($copiaBody/*/*:encabezadoSolicitud/v13:nombreProceso), 
-              " | CODIGOTRANSACCION :", data($copiaBody/*/*:encabezadoSolicitud/*:codigoTransaccion),
-              " | NEMONICO :", data($copiaBody/*/*:detalleSolicitudApertura/*:tipoIdentificacion1), data($copiaBody/*/*:detalleSolicitudApertura/*:numeroIdentificacion1))</con2:path>
-                                </con2:param>
-                                <con2:param name="codigoRespuesta">
-                                    <con2:path>data($body/*/*:cabeceraSalida/*:tipoRespuesta)</con2:path>
-                                </con2:param>
-                            </con2:xqueryTransform>
+                            <con6:xqueryTransform xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+                                <con6:resource ref="ComponentesComunes/Resources/XQUERYs/xq_Auditoria_to_RegistrarAuditoriaSOA"/>
+                                <con6:param name="codigoError">
+                                    <con6:path>if(data($body/*/*:cabeceraSalida/*:tipoRespuesta) = "OK")
+then ("00") 
+else data($body/*/*:cabeceraSalida/*:respuestaError/*:codigoError)</con6:path>
+                                </con6:param>
+                                <con6:param name="horaInicialTX">
+                                    <con6:path>$horaInicialTx</con6:path>
+                                </con6:param>
+                                <con6:param name="mensajeResponse">
+                                    <con6:path>$body/*</con6:path>
+                                </con6:param>
+                                <con6:param name="mensajeRequest">
+                                    <con6:path>$mensajeEntradaEBS</con6:path>
+                                </con6:param>
+                                <con6:param name="pId">
+                                    <con6:path>if ($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:procesoId and fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:procesoId)!='') then
+  fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:procesoId)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="nombreFlujo">
+                                    <con6:path>concat(fn:data($operation),"EBS")</con6:path>
+                                </con6:param>
+                                <con6:param name="archivoResponse">
+                                    <con6:path>""</con6:path>
+                                </con6:param>
+                                <con6:param name="archivoRequest">
+                                    <con6:path>""</con6:path>
+                                </con6:param>
+                                <con6:param name="oficina">
+                                    <con6:path>if ($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:codigoOficina and fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:codigoOficina)!='') then
+  fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:codigoOficina)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="numeroReferencia">
+                                    <con6:path>if ($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:numeroSolicitud and fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:numeroSolicitud)!='') then
+  fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:numeroSolicitud)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="tipoError">
+                                    <con6:path>if ($body/*/*:cabeceraSalida/*:respuestaError/*:tipoError and fn:data($body/*/*:cabeceraSalida/*:respuestaError/*:tipoError)!='') then
+  fn:data($body/*/*:cabeceraSalida/*:respuestaError/*:tipoError)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="usuario">
+                                    <con6:path>if ($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:usuario and fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:usuario)!='') then
+  fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:usuario)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="id">
+                                    <con6:path>if ($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:identificadorTx and fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:identificadorTx)!='') then
+  fn:data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:identificadorTx)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="descripcionError">
+                                    <con6:path>if ($body/*/*:cabeceraSalida/*:respuestaError/*:descripcionError and fn:data($body/*/*:cabeceraSalida/*:respuestaError/*:descripcionError)!='') then
+  fn:data($body/*/*:cabeceraSalida/*:respuestaError/*:descripcionError)
+else(' ')</con6:path>
+                                </con6:param>
+                                <con6:param name="infoAdicional3">
+                                    <con6:path>fn:concat("CANAL: ",data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:canalOrigen)," SUBCANAL: ",data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:subcanal))</con6:path>
+                                </con6:param>
+                                <con6:param name="descripcionTipoError">
+                                    <con6:path>" "</con6:path>
+                                </con6:param>
+                                <con6:param name="infoAdicional2">
+                                    <con6:path>fn:concat("NUMEROSOLICITUD: ",data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:numeroSolicitud))</con6:path>
+                                </con6:param>
+                                <con6:param name="infoAdicional1">
+                                    <con6:path>fn:concat("CODIGOCLIENTE: ",data($mensajeEntradaEBS/*:cabeceraEntrada/*:invocador/*:codigoCliente))</con6:path>
+                                </con6:param>
+                                <con6:param name="codigoRespuesta">
+                                    <con6:path>if ($body/*/*:cabeceraSalida/*:tipoRespuesta and fn:data($body/*/*:cabeceraSalida/*:tipoRespuesta)!='') then
+  fn:data($body/*/*:cabeceraSalida/*:tipoRespuesta)
+else(' ')</con6:path>
+                                </con6:param>
+                            </con6:xqueryTransform>
                         </con1:expr>
                     </con1:replace>
-                </con:actions>
-            </con:stage>
-            <con:stage name="stg_auditarMensaje" id="_StageId-ad48653.391527db.0.1954e682498.N7590">
-                <con:context xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                    <con2:userNsDecl prefix="v12" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Cliente/V1.0"/>
-                    <con2:userNsDecl prefix="v11" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Solicitud/V1.0"/>
-                    <con2:userNsDecl prefix="v13" namespace="http://xmlns.bancocajasocial.com/co/comunes/schema/Persona/V1.0"/>
-                    <con2:userNsDecl prefix="v1" namespace="http://xmlns.bancocajasocial.com/co/schemas/operacion/crearTarjetaCredito/v1.0"/>
-                </con:context>
-                <con:actions>
-                    <con4:route xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
-                        <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N758f</con2:id>
+                    <con4:route xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+                        <con2:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N799e</con2:id>
                         <con4:service ref="UtilitariosEBS/Proxies/AuditoriaSOA/RegistrarAuditoriaSOADATV1.0" xsi:type="ref:ProxyRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
                         <con4:operation>registrarAuditoria</con4:operation>
                         <con4:outboundTransform>
                             <con5:replace varName="body" contents-only="true" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
-                                <con2:id>_ActionId-ad48653.391527db.0.1954e682498.N758e</con2:id>
+                                <con2:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N799d</con2:id>
                                 <con1:expr>
-                                    <con2:xqueryText>$transformacionBody</con2:xqueryText>
+                                    <con2:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$transformacionBody</con2:xqueryText>
                                 </con1:expr>
                             </con5:replace>
                         </con4:outboundTransform>
@@ -2494,7 +2250,7 @@ def crear_pipeline_ebs(wsdl_ref: str, binding_wsdl: str, namespace_wsdl: str, op
             </con:stage>
         </con:pipeline>
         <con:flow>
-            <con:pipeline-node name="stg_EBS">
+            <con:pipeline-node name="stg_{operation_name}AS">
                 <con:request>request-ad486dc.N127d0eee.0.172040c1caf.N7b8f</con:request>
                 <con:response>response-ad486dc.N127d0eee.0.172040c1caf.N7b8e</con:response>
             </con:pipeline-node>
