@@ -2325,6 +2325,15 @@ def exportar_proyecto_zip():
             with open(xsd_abs_path_abc, "w", encoding="utf-8") as f:
                 f.write(st.session_state["xsd_file_abc"])
                 
+            if st.session_state.get("requiere_abc2") == "SI":
+                
+                xsd_rel_path_abc2 = st.session_state["ubicacion_xsd_abc2"]  # ej: "ComponentesComunes\\Resources\\Schemas\\Servicios\\DatosVisacionV2.1\\consultarInfoArchivoIngresoPrestamo.xsd"
+                xsd_abs_path_abc2 = os.path.join(tmpdir, xsd_rel_path_abc2)  # Se crea directamente en la raíz del .zip
+
+                os.makedirs(os.path.dirname(xsd_abs_path_abc2), exist_ok=True)
+                with open(xsd_abs_path_abc2, "w", encoding="utf-8") as f:
+                    f.write(st.session_state["xsd_file_abc"])
+                
         # --- Crear estructura ABC ---
         abc_root = os.path.join(tmpdir, f"{st.session_state['nombre_capa_abc']}")
         
@@ -2349,6 +2358,33 @@ def exportar_proyecto_zip():
         os.makedirs(os.path.dirname(wsdl_abc_abs_path), exist_ok=True)
         with open(wsdl_abc_abs_path, "w", encoding="utf-8") as f:
             f.write(st.session_state["archivo_wsdl_abc"])
+        
+        # --- Crear estructura ABC #2 ---        
+        if st.session_state.get("requiere_abc2") == "SI":
+                      
+            abc_root2 = os.path.join(tmpdir, f"{st.session_state['nombre_capa_abc2']}")
+            
+            proxy_abc_rel_path2 = st.session_state["ubicacion_proxy_abc2"]
+            proxy_abc_abs_path2 = os.path.join(tmpdir, proxy_abc_rel_path2)  
+            pipeline_abc_rel_path2 = st.session_state["ubicacion_pipeline_abc2"]
+            pipeline_abc_abs_path2 = os.path.join(tmpdir, pipeline_abc_rel_path2)
+            wsdl_abc_rel_path2 = st.session_state["ubicacion_wsdl_abc2"]
+            wsdl_abc_abs_path2 = os.path.join(tmpdir, wsdl_abc_rel_path2) 
+
+            #Proxy ABC
+            os.makedirs(os.path.dirname(proxy_abc_abs_path2), exist_ok=True)
+            with open(proxy_abc_abs_path2, "w", encoding="utf-8") as f:
+                f.write(st.session_state["archivo_proxy_abc2"])
+                
+            #Pipeline ABC
+            os.makedirs(os.path.dirname(pipeline_abc_abs_path2), exist_ok=True)
+            with open(pipeline_abc_abs_path2, "w", encoding="utf-8") as f:
+                f.write(st.session_state["archivo_pipeline_abc2"])
+                
+            #WSDL ABC
+            os.makedirs(os.path.dirname(wsdl_abc_abs_path2), exist_ok=True)
+            with open(wsdl_abc_abs_path2, "w", encoding="utf-8") as f:
+                f.write(st.session_state["archivo_wsdl_abc2"])
             
         if st.session_state.get("requiere_ebs") == "SI":
             # --- Crear estructura EBS ---
@@ -2483,10 +2519,19 @@ def exportar_proyecto_jar():
         guardar_recurso(st.session_state["ubicacion_proxy_abc"], st.session_state["archivo_proxy_abc"])
         guardar_recurso(st.session_state["ubicacion_pipeline_abc"], st.session_state["archivo_pipeline_abc"])
         guardar_recurso(st.session_state["ubicacion_wsdl_abc"], st.session_state["archivo_wsdl_abc"])
+        
+        # ABC 2
+        if st.session_state.get("requiere_abc2") == "SI":
+            guardar_recurso(st.session_state["ubicacion_proxy_abc2"], st.session_state["archivo_proxy_abc2"])
+            guardar_recurso(st.session_state["ubicacion_pipeline_abc2"], st.session_state["archivo_pipeline_abc2"])
+            guardar_recurso(st.session_state["ubicacion_wsdl_abc2"], st.session_state["archivo_wsdl_abc2"])
 
         #Opcion operacion ABC diferente
         if st.session_state.get("misma_operacion_abc") == "NO":
             guardar_recurso(st.session_state["ubicacion_xsd_abc"], st.session_state["xsd_file_abc"])
+            
+            if st.session_state.get("requiere_abc2") == "SI":
+                guardar_recurso(st.session_state["ubicacion_xsd_abc2"], st.session_state["xsd_file_abc2"])
         else:
             st.session_state["ubicacion_xsd_abc"] = st.session_state["ubicacion_xsd_exp"]
         # --- Construir ExportInfo dinámicamente ---
@@ -2527,6 +2572,42 @@ def exportar_proyecto_jar():
             type_id="WSDL",
             extrefs=["XMLSchema$" + xsd_exp_path.replace("/", "$")]
         ))
+        
+        # --- Opcion Capa ABC #2 ---
+        if st.session_state.get("requiere_abc2") == "SI":
+            proxy_abc_path2 = st.session_state["ubicacion_proxy_abc2"].replace("\\", "/").replace(".proxy", "")
+            pipeline_abc_path2 = st.session_state["ubicacion_pipeline_abc2"].replace("\\", "/").replace(".pipeline", "")
+            wsdl_abc_path2 = st.session_state["ubicacion_wsdl_abc2"].replace("\\", "/").replace(".wsdl", "")
+            
+            items.append(generar_exported_item(
+                instance_id=proxy_abc_path2,
+                type_id="ProxyService",
+                extrefs=[
+                    "Pipeline$" + pipeline_abc_path2.replace("/", "$"),
+                    "WSDL$" + wsdl_abc_path2.replace("/", "$")
+                ]
+            ))
+
+            # --- PIPELINE ABC ---
+            items.append(generar_exported_item(
+                instance_id=pipeline_abc_path2,
+                type_id="Pipeline",
+                extrefs=[
+                    "WSDL$" + wsdl_abc_path2.replace("/", "$"),
+                    "ProxyService$ComponentesComunes$Proxies$PS_ManejadorGenericoErroresV1.0",
+                    "ProxyService$UtilitariosEBS$Proxies$AuditoriaSOA$RegistrarAuditoriaSOADATV1.0",
+                    "Xquery$ComponentesComunes$Resources$XQUERYs$xq_operacion_to_manejarError",
+                    "Xquery$ComponentesComunes$Resources$XQUERYs$xq_Auditoria_to_RegistrarAuditoriaSOA"
+                ]
+            ))
+
+            # --- WSDL ABC ---
+            xsd_exp_path = st.session_state["ubicacion_xsd_abc2"].replace("\\", "/").replace(".xsd", "")
+            items.append(generar_exported_item(
+                instance_id=wsdl_abc_path2,
+                type_id="WSDL",
+                extrefs=["XMLSchema$" + xsd_exp_path.replace("/", "$")]
+            ))
         
         # EBS
         if st.session_state.get("requiere_ebs") == "SI":
@@ -2591,6 +2672,18 @@ def exportar_proyecto_jar():
                     "XMLSchema$ComponentesComunes$Resources$Schemas$Entidades$ComunesV2.1$Cabeceras"
                 ]
             ))
+            
+            if st.session_state.get("requiere_abc2") == "SI":
+                
+                # --- XSD ABC #2 ---
+                xsd_abc_full2 = st.session_state["ubicacion_xsd_abc2"].replace("\\", "/").replace(".xsd", "")
+                items.append(generar_exported_item(
+                    instance_id=xsd_abc_full2,
+                    type_id="XMLSchema",
+                    extrefs=[
+                        "XMLSchema$ComponentesComunes$Resources$Schemas$Entidades$ComunesV2.1$Cabeceras"
+                    ]
+                ))
             
 
         # --- PROXY EXP (si aplica) ---
@@ -2734,6 +2827,29 @@ def generar_proyecto():
                 st.session_state["input_xsd_abc"]  = st.session_state["operation_name_abc"]+"Request"
                 st.session_state["output_xsd_abc"] = st.session_state["operation_name_abc"]+"Response"
                 
+                # Variables para capa abc #2
+                if st.session_state.get("requiere_abc2") == "SI":
+                    
+                    if "nombre_capa_abc2" not in st.session_state:
+                        st.session_state["nombre_capa_abc2"] = ""
+                    
+                    if "ubicacion_xsd_abc2" in st.session_state:
+                        st.session_state["ubicacion_xsd_abc2"] = ""
+                    
+                    if "targetnamespace_abc2" not in st.session_state:
+                        st.session_state["targetnamespace_abc2"] = f"http://xmlns.bancocajasocial.com/co/schemas/operacion/{st.session_state['operation_name_abc2']}/v1.0"
+                
+                    if "xmlns_abc2" not in st.session_state:
+                        st.session_state["xmlns_abc2"] = generar_xmlns(st.session_state["operation_name_abc2"])
+                        
+                    st.session_state["complextype_abc2"] = capitalizar_inicio(st.session_state["operation_name_abc2"])
+                    st.session_state["xsd_name_abc2"] = st.session_state["operation_name_abc2"] +".xsd"
+                    
+                    st.session_state["xsd_file_abc2"] = generate_xsd(st.session_state["operation_name_abc2"],st.session_state["complextype_abc2"],st.session_state["xmlns_abc2"])
+                    st.session_state["wsdl_text_abc2"] = ""
+                    
+                    st.session_state["input_xsd_abc2"]  = st.session_state["operation_name_abc2"]+"Request"
+                    st.session_state["output_xsd_abc2"] = st.session_state["operation_name_abc2"]+"Response"
             
             #targetnamespace = f"http://xmlns.bancocajasocial.com/co/schemas/operacion/{st.session_state["operation_name"]}"
             if "xmlns" not in st.session_state:
@@ -2790,7 +2906,7 @@ def generar_proyecto():
             if st.session_state.get("misma_operacion_abc") == "NO":
                 
                 
-                with st.expander("⚙️ Configuración XSD ABC", expanded=True):
+                with st.expander("⚙️ Configuración XSD ABC #1", expanded=True):
 
                     #st.markdown("<h6 style='text-align: center;'>Nombre XSD</h6>", unsafe_allow_html=True)
                     st.markdown(f"<h6 style='text-align: center;'>{st.session_state["xsd_name_abc"]}</h6>", unsafe_allow_html=True)
@@ -2808,6 +2924,27 @@ def generar_proyecto():
 
                     if not st.session_state["ubicacion_xsd_abc"]:
                         st.warning("⚠ Digita la ubicacion del xsd ABC.")
+            
+                
+                if st.session_state.get("requiere_abc2") == "SI":
+                    with st.expander("⚙️ Configuración XSD ABC #2", expanded=True):
+
+                        #st.markdown("<h6 style='text-align: center;'>Nombre XSD</h6>", unsafe_allow_html=True)
+                        st.markdown(f"<h6 style='text-align: center;'>{st.session_state["xsd_name_abc2"]}</h6>", unsafe_allow_html=True)
+                        st.text_input("📝 targetNamespace", disabled=True, key="targetnamespace_abc2")
+                        st.text_input("📝 xmlns", value=st.session_state["xmlns_abc2"], disabled=True)
+                        
+                        ubicacion_xsd_abc2 = st.session_state.get("ubicacion_xsd_abc2", "")
+                        
+                        # Campo editable que recuerda su valor
+                        st.session_state["ubicacion_xsd_abc2"] = st.text_input(
+                            "📝 Ubicación XSD ABC #2",
+                            value=ubicacion_xsd_abc2,  # recupera siempre
+                            key="ubicacion_xsd_abc_input2"
+                        )
+
+                        if not st.session_state["ubicacion_xsd_abc2"]:
+                            st.warning("⚠ Digita la ubicacion del xsd ABC #2.")
             
             
             if st.session_state["tipo_servicio"] == "Existente" and st.session_state["ubicacion_xsd_exp"]:
@@ -2861,13 +2998,17 @@ def generar_proyecto():
                         
                         if st.session_state.get("misma_operacion_abc") == "NO":
                             st.session_state["ubicacion_xsd_abc"] = f"{st.session_state['ubicacion_xsd_abc']}\\{st.session_state['xsd_name_abc']}"
+                            
+                            if st.session_state.get("requiere_abc2") == "SI":
+                                st.session_state["ubicacion_xsd_abc2"] = f"{st.session_state['ubicacion_xsd_abc2']}\\{st.session_state['xsd_name_abc2']}"
+                            
                         else:
                             st.session_state["ubicacion_xsd_abc"] = st.session_state["ubicacion_xsd_exp"]
                             st.session_state["targetnamespace_abc"] = st.session_state["targetnamespace"]
                             st.session_state["xmlns_abc"] = st.session_state["xmlns"]
                             
                         
-                        with st.expander("⚙️Generacion capa ABC", expanded=True):
+                        with st.expander("⚙️Generacion capa ABC #1", expanded=True):
                         
                             st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc"], "nombre", st.session_state["version_proxy_abc"])}</h6>", unsafe_allow_html=True)
                             
@@ -2936,6 +3077,79 @@ def generar_proyecto():
                             )
                             st.text_input("📝 WSDL ABC", value=st.session_state["wsdl_abc"], disabled=True, label_visibility="collapsed")
                             
+                        
+                        if st.session_state.get("requiere_abc2") == "SI":
+                            
+                            with st.expander("⚙️Generacion capa ABC #2", expanded=True):
+                        
+                                st.markdown(f"<h6 style='text-align: center;'>{generar_nombrado_abc(st.session_state["operation_name_abc2"], "nombre", st.session_state["version_proxy_abc2"])}</h6>", unsafe_allow_html=True)
+                                
+                                st.session_state["proxy_abc2"] = generar_nombrado_abc(st.session_state["operation_name_abc2"], "proxy", st.session_state["version_proxy_abc2"])
+                                st.session_state["ubicacion_proxy_abc2"] = st.session_state["nombre_capa_abc2"]+"/Proxies/"+st.session_state["proxy_abc2"]
+                                st.session_state["pipeline_abc2"] = generar_nombrado_abc(st.session_state["operation_name_abc2"], "pipeline", st.session_state["version_proxy_abc2"])
+                                st.session_state["ubicacion_pipeline_abc2"] = st.session_state["nombre_capa_abc2"]+"/Pipeline/"+st.session_state["pipeline_abc2"]
+                                st.session_state["wsdl_abc2"] = generar_nombrado_abc(st.session_state["operation_name_abc2"], "wsdl", st.session_state["version_proxy_abc2"])
+                                st.session_state["ubicacion_wsdl_abc2"] = st.session_state["nombre_capa_abc2"]+"/Resources/WSDLs/"+st.session_state["wsdl_abc2"]
+                                
+                                
+                                st.session_state["archivo_wsdl_abc2"] = crear_wsdl_abc(
+                                        st.session_state["operation_name_abc2"],
+                                        st.session_state["ubicacion_wsdl_abc2"],
+                                        st.session_state["ubicacion_xsd_abc2"],
+                                        st.session_state["targetnamespace_abc2"],
+                                        st.session_state["xmlns_abc2"]
+                                    )
+                                
+                                st.session_state["namespace_wsdl_abc2"], st.session_state["binding_wsdl_abc2"] = obtener_namespace_y_binding(st.session_state["archivo_wsdl_abc2"])
+                                
+                                st.markdown(
+                                        f"""
+                                        <div style="font-size:14px; font-weight:400; font-family:Source Sans Pro">📝 Proxy ABC #2</div>
+                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_proxy_abc2"]}</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                )
+                                st.text_input("📝 Proxy ABC #2", value=st.session_state["proxy_abc2"], disabled=True, label_visibility="collapsed")
+                                
+                                st.session_state["archivo_proxy_abc2"] = crear_proxy_abc(
+                                    quitar_extension(st.session_state["ubicacion_wsdl_abc2"]),
+                                    st.session_state["binding_wsdl_abc2"],
+                                    st.session_state["namespace_wsdl_abc2"],
+                                    quitar_extension(st.session_state["ubicacion_pipeline_abc2"])
+                                )
+                                
+                                #st.code(st.session_state["archivo_proxy_abc"].replace("\n", " "), language="xml")
+                                
+                                
+                                st.markdown(
+                                        f"""
+                                        <div style="font-size:14px; font-weight:400; font-family:Source Sans Pro">📝 Pipeline ABC #2</div>
+                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_pipeline_abc2"]}</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                )
+                                st.text_input("📝 Pipeline ABC #2", value=st.session_state["pipeline_abc2"], disabled=True, label_visibility="collapsed")
+                                
+                                
+                                st.session_state["archivo_pipeline_abc2"] = crear_pipeline_abc(
+                                    quitar_extension(st.session_state["ubicacion_wsdl_abc2"]),
+                                    st.session_state["binding_wsdl_abc2"],
+                                    st.session_state["namespace_wsdl_abc2"],
+                                    st.session_state["operation_name_abc2"]
+                                )
+                                
+                                #st.code(st.session_state["archivo_pipeline_abc"].replace("\n", " "), language="xml")
+                                
+                                st.markdown(
+                                        f"""
+                                        <div style="font-size:14px; font-weight:400; font-family:Source Sans Pro">📝 WSDL ABC #2</div>
+                                        <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_abc2"]}</div>
+                                        """,
+                                        unsafe_allow_html=True
+                                )
+                                st.text_input("📝 WSDL ABC #2", value=st.session_state["wsdl_abc2"], disabled=True, label_visibility="collapsed")
+                            
+                        
                         if st.session_state.get("requiere_ebs") == "SI":
                             with st.expander("⚙️Generacion capa EBS", expanded=True):
                             
