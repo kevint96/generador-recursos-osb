@@ -3726,10 +3726,15 @@ def main():
                                     "con": "http://www.bea.com/wli/sb/pipeline/config"
                                 }
                                 st.session_state["ubicacion_pipeline_exp"] = None
-                                invoke_elem = root.find(".//ser:invoke[@xsi:type='con:PipelineRef']", {
-                                    **ns,
-                                    "xsi": "http://www.w3.org/2001/XMLSchema-instance"
-                                })
+                                invoke_elem = None
+
+                                for elem in root.findall(".//ser:invoke", {
+                                    "ser": "http://www.bea.com/wli/sb/services"
+                                }):
+                                    xsi_type = elem.attrib.get("{http://www.w3.org/2001/XMLSchema-instance}type")
+                                    if xsi_type and xsi_type.endswith("PipelineRef"):
+                                        invoke_elem = elem
+                                        break
                                 if invoke_elem is not None:
                                     pipeline_ref = invoke_elem.attrib.get("ref")
 
