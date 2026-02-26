@@ -3348,13 +3348,17 @@ def generar_proyecto():
                     
                             st.text_input("📝 Pipeline EXP", value=st.session_state["pipeline_exp"], disabled=True, label_visibility="collapsed")
                             
+                            if st.session_state.get("requiere_ebs") == "SI":
+                                ubicacion_proxy_destino = st.session_state["ubicacion_proxy_ebs"]
+                            else:
+                                ubicacion_proxy_destino = st.session_state["ubicacion_proxy_abc"]
                             
                             st.session_state["archivo_pipeline_exp"] = agregar_operacion_pipeline(
                                 st.session_state["pipeline_text"],
                                 st.session_state["operation_name"],
                                 st.session_state["targetnamespace"],
                                 os.path.normpath(st.session_state["ubicacion_xsd_exp"]).rsplit('.', 1)[0].replace("\\", "/"),
-                                os.path.normpath(st.session_state["ubicacion_proxy_abc"]).rsplit('.', 1)[0].replace("\\", "/")
+                                os.path.normpath(ubicacion_proxy_destino.rsplit('.', 1)[0].replace("\\", "/")
                             )
                             st.code(st.session_state["archivo_pipeline_exp"], language="xml")
                             
