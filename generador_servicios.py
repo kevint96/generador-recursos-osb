@@ -2109,7 +2109,7 @@ def crear_pipeline_ebs(wsdl_ref: str, binding_wsdl: str, namespace_wsdl: str, op
                     <con3:assign varName="operacionEBS">
                         <con1:id>_ActionId-ad48653.N78f153f3.0.19c95c8130c.N7c44</con1:id>
                         <con3:expr>
-                            <con1:xqueryText>&lt;operacionEBS>{$operation}&lt;/operacionEBS></con1:xqueryText>
+                            <con1:xqueryText>&lt;operacionEBS>{{$operation}}&lt;/operacionEBS></con1:xqueryText>
                         </con3:expr>
                     </con3:assign>
                 </con:actions>
