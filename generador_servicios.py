@@ -2947,7 +2947,7 @@ def generar_proyecto():
             
             if st.session_state["tipo_servicio"] == "Existente" and st.session_state["ubicacion_xsd_exp"]:
                 
-                if st.session_state.get("requiere_abc2") == "SI" and st.session_state["ubicacion_xsd_abc2"] or (st.session_state.get("requiere_abc2") == "NO" and not st.session_state["ubicacion_xsd_abc2"]):
+                if ((st.session_state.get("requiere_abc2") == "SI" and st.session_state.get("ubicacion_xsd_abc2")) or (st.session_state.get("requiere_abc2") == "NO" and not st.session_state.get("ubicacion_xsd_abc2"))):
                 
                     if st.session_state.get("misma_operacion_abc") == "NO" and st.session_state["ubicacion_xsd_abc"] or st.session_state.get("misma_operacion_abc") == "SI" or st.session_state.get("requiere_abc2") == "SI" and st.session_state["ubicacion_xsd_abc2"]:
                     
