@@ -3845,9 +3845,9 @@ def main():
                                         )
                                         st.session_state["version_ebs"] = st.selectbox(
                                             "Versión EBS",
-                                            options=["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
+                                            options=["","V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"],
                                             index=(
-                                                ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_ebs"])
+                                                ["","V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"].index(st.session_state["version_ebs"])
                                                 if "version_ebs" in st.session_state and st.session_state["version_ebs"] in ["V1.0", "V1.1", "V1.2", "V2.0", "V2.1", "V2.2"]
                                                 else 0
                                             ),
