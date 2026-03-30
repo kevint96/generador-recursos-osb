@@ -3863,9 +3863,11 @@ def main():
                                             """,
                                             unsafe_allow_html=True
                                         )
+                                        op = st.session_state["operation_name"]
+                                        op_formateado = op[0].upper() + op[1:] if op else ""
                                         st.session_state["service_name_ebs"] = st.text_input(
                                             label="Nombre del servicio EBS",
-                                            value=st.session_state["operation_name"].capitalize()+st.session_state["terminacion_seleccionada_ebs"]+st.session_state["version_ebs"],
+                                            value=op_formateado+st.session_state["terminacion_seleccionada_ebs"]+st.session_state["version_ebs"],
                                             disabled=True,
                                             label_visibility="collapsed"
                                         )
