@@ -3865,7 +3865,7 @@ def main():
                                         )
                                         st.session_state["service_name_ebs"] = st.text_input(
                                             label="Nombre del servicio EBS",
-                                            value=st.session_state["operation_name"]+st.session_state["terminacion_seleccionada_ebs"]+st.session_state["version_ebs"],
+                                            value=st.session_state["operation_name"].capitalize()+st.session_state["terminacion_seleccionada_ebs"]+st.session_state["version_ebs"],
                                             disabled=True,
                                             label_visibility="collapsed"
                                         )
