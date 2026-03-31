@@ -3157,9 +3157,9 @@ def generar_proyecto():
                                     
                                     #st.write(f"{st.session_state["capa_seleccionada_ebs"]}")
                                     st.session_state["proxy_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "proxy", st.session_state["version_ebs"])
-                                    st.session_state["ubicacion_proxy_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Proxies/"+st.session_state["proxy_ebs"]
+                                    st.session_state["ubicacion_proxy_ebs"] = st.session_state["ruta_proxy_ebs"] + st.session_state["proxy_ebs"]
                                     st.session_state["pipeline_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "pipeline", st.session_state["version_ebs"])
-                                    st.session_state["ubicacion_pipeline_ebs"] = st.session_state["capa_seleccionada_ebs"].split('/')[0]+"/Pipeline/"+st.session_state["pipeline_ebs"]
+                                    st.session_state["ubicacion_pipeline_ebs"] = st.session_state["ruta_pipeline_ebs"] + st.session_state["pipeline_ebs"]
                                     st.session_state["wsdl_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "wsdl", st.session_state["version_ebs"])
                                     st.session_state["ubicacion_wsdl_ebs"] = st.session_state["ruta_wsdl_ebs"] + st.session_state["wsdl_ebs"]
                                     
@@ -3918,6 +3918,35 @@ def main():
                                         else:
                                             st.warning("⚠️ No se encontró carpeta Pipelines en esta capa EBS.")
                                         
+                                        
+                                        #Deteccion del proxy EBS
+                                        rutas_proxy_detectadas = set()
+
+                                        for ruta in rutas:
+                                            ruta_norm = ruta.replace("\\", "/")
+
+                                            # Validar que pertenezca a la capa EBS seleccionada
+                                            if not ruta_norm.startswith(capa_ebs):
+                                                continue
+
+                                            partes = ruta_norm.split("/")
+
+                                            # Buscar cualquier carpeta que contenga "proxy"
+                                            for i, p in enumerate(partes):
+                                                if "proxy" in p.lower():
+                                                    ruta_proxy = "/".join(partes[:i+1]) + "/"
+                                                    rutas_proxy_detectadas.add(ruta_proxy)
+                                                    break  # solo la primera coincidencia por ruta
+
+                                        ruta_proxy_ebs_detectada = None
+
+                                        if rutas_proxy_detectadas:
+                                            # Elegir la ruta más corta (normalmente la correcta)
+                                            ruta_proxy_ebs_detectada = sorted(rutas_proxy_detectadas, key=len)[0]
+
+                                        st.session_state["ruta_proxy_ebs"] = ruta_proxy_ebs_detectada
+                                        
+                                        
                                         st.markdown(
                                             f"""
                                             <div style="font-size:18px; font-weight:bold;">Versión EBS</div>
@@ -3940,7 +3969,7 @@ def main():
                                         st.markdown(
                                             f"""
                                             <div style="font-size:18px; font-weight:bold;">Nombre del servicio EBS</div>
-                                            <div style="font-size:12px; color:gray;">📂 {st.session_state["capa_seleccionada_ebs"]}</div>
+                                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ruta_proxy_ebs"]}</div>
                                             """,
                                             unsafe_allow_html=True
                                         )
