@@ -3840,22 +3840,44 @@ def main():
                                             label_visibility="collapsed"
                                         )
                                         
-                                        # Obtener los WSDL asociados
-                                        wsdl_refs_ebs = obtener_wsdl_asociados(jar_file, st.session_state["capa_seleccionada_ebs"])
+                                        capa_ebs = st.session_state["capa_seleccionada_ebs"].strip("/")
+
+                                        rutas_wsdl_detectadas = set()
+
+                                        for ruta in rutas:
+                                            ruta_norm = ruta.replace("\\", "/")
+
+                                            # Validar que pertenezca a la capa EBS seleccionada
+                                            if not ruta_norm.startswith(capa_ebs):
+                                                continue
+
+                                            partes = ruta_norm.split("/")
+
+                                            # Buscar cualquier carpeta que contenga "wsdl"
+                                            for i, p in enumerate(partes):
+                                                if "wsdl" in p.lower():
+                                                    ruta_wsdl = "/".join(partes[:i+1]) + "/"
+                                                    rutas_wsdl_detectadas.add(ruta_wsdl)
+                                                    break  # solo la primera coincidencia por ruta
+
+                                        ruta_wsdl_ebs_detectada = None
+
+                                        if rutas_wsdl_detectadas:
+                                            # Elegir la ruta más corta (normalmente la correcta)
+                                            ruta_wsdl_ebs_detectada = sorted(rutas_wsdl_detectadas, key=len)[0]
+
+                                        st.session_state["ruta_wsdl_ebs"] = ruta_wsdl_ebs_detectada
                                         
-                                        st.session_state["ruta_wsdl_ebs"] = wsdl_refs_ebs
-                                        st.session_state["ubicacion_wsdl_ebs"] = "/".join(st.session_state["ruta_wsdl_ebs"].split("/")[:-1]) + "/"   # Carpeta (ubicación)
-                                        st.session_state["wsdl_ebs"] = st.session_state["ruta_wsdl_ebs"].split("/")[-1] # Nombre del servicio (sin extensión)
-                                        
-                                        
-                                        # Mostrar con subtítulo pequeño
-                                        st.markdown(
-                                            f"""
-                                            <div style="font-size:18px; font-weight:bold;">Nombre del wsdl ebs</div>
-                                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_ebs"]}</div>
-                                            """,
-                                            unsafe_allow_html=True
-                                        )
+                                        if st.session_state["ruta_wsdl_ebs"]:
+                                            st.markdown(
+                                                f"""
+                                                <div style="font-size:18px; font-weight:bold;">Ruta WSDL EBS detectada</div>
+                                                <div style="font-size:12px; color:gray;">📂 {st.session_state["ruta_wsdl_ebs"]}</div>
+                                                """,
+                                                unsafe_allow_html=True
+                                            )
+                                        else:
+                                            st.warning("⚠️ No se encontró carpeta WSDLs en esta capa EBS.")
                                         
                                         st.markdown(
                                             f"""
