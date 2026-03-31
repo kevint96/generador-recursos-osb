@@ -3878,6 +3878,45 @@ def main():
                                             )
                                         else:
                                             st.warning("⚠️ No se encontró carpeta WSDLs en esta capa EBS.")
+                                            
+                                        
+                                        #Deteccion del pipeline EBS
+                                        rutas_pipeline_detectadas = set()
+
+                                        for ruta in rutas:
+                                            ruta_norm = ruta.replace("\\", "/")
+
+                                            # Validar que pertenezca a la capa EBS seleccionada
+                                            if not ruta_norm.startswith(capa_ebs):
+                                                continue
+
+                                            partes = ruta_norm.split("/")
+
+                                            # Buscar cualquier carpeta que contenga "pipeline"
+                                            for i, p in enumerate(partes):
+                                                if "pipeline" in p.lower():
+                                                    ruta_pipeline = "/".join(partes[:i+1]) + "/"
+                                                    rutas_pipeline_detectadas.add(ruta_pipeline)
+                                                    break  # solo la primera coincidencia por ruta
+
+                                        ruta_pipeline_ebs_detectada = None
+
+                                        if rutas_pipeline_detectadas:
+                                            # Elegir la ruta más corta (normalmente la correcta)
+                                            ruta_pipeline_ebs_detectada = sorted(rutas_pipeline_detectadas, key=len)[0]
+
+                                        st.session_state["ruta_pipeline_ebs"] = ruta_pipeline_ebs_detectada
+                                        
+                                        if st.session_state["ruta_pipeline_ebs"]:
+                                            st.markdown(
+                                                f"""
+                                                <div style="font-size:18px; font-weight:bold;">Ruta Pipeline EBS detectada</div>
+                                                <div style="font-size:12px; color:gray;">📂 {st.session_state["ruta_pipeline_ebs"]}</div>
+                                                """,
+                                                unsafe_allow_html=True
+                                            )
+                                        else:
+                                            st.warning("⚠️ No se encontró carpeta Pipelines en esta capa EBS.")
                                         
                                         st.markdown(
                                             f"""
