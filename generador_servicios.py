@@ -3157,7 +3157,7 @@ def generar_proyecto():
                                     
                                     #st.write(f"{st.session_state["capa_seleccionada_ebs"]}")
                                     st.session_state["proxy_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "proxy", st.session_state["version_ebs"])
-                                    st.session_state["ubicacion_proxy_ebs"] = st.session_state["ruta_proxy_ebs"] + st.session_state["proxy_ebs"]
+                                    st.session_state["ubicacion_proxy_ebs"] = st.session_state["capa_seleccionada_ebs"] + st.session_state["proxy_ebs"]
                                     st.session_state["pipeline_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "pipeline", st.session_state["version_ebs"])
                                     st.session_state["ubicacion_pipeline_ebs"] = st.session_state["ruta_pipeline_ebs"] + st.session_state["pipeline_ebs"]
                                     st.session_state["wsdl_ebs"] = generar_nombrado_ebs(st.session_state["operation_name"], "wsdl", st.session_state["version_ebs"])
