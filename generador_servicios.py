@@ -3632,6 +3632,8 @@ def main():
                 proxies_ebs = capas_detectadas["EBS"]["Proxy"]
                 proxies_abc = capas_detectadas["ABC"]["Proxy"]
                 
+                wsdls_ebs = capas_detectadas["EBS"]["WSDL"]
+                
                 # Carpeta raíz detectada
                 carpetas_raiz = set()
 
@@ -3837,6 +3839,24 @@ def main():
                                             disabled=False,
                                             label_visibility="collapsed"
                                         )
+                                        
+                                        # Obtener los WSDL asociados
+                                        wsdl_refs_ebs = obtener_wsdl_asociados(jar_file, st.session_state["capa_seleccionada_ebs"])
+                                        
+                                        st.session_state["ruta_wsdl_ebs"] = wsdl_refs_ebs
+                                        st.session_state["ubicacion_wsdl_ebs"] = "/".join(st.session_state["ruta_wsdl_ebs"].split("/")[:-1]) + "/"   # Carpeta (ubicación)
+                                        st.session_state["wsdl_ebs"] = st.session_state["ruta_wsdl_ebs"].split("/")[-1] # Nombre del servicio (sin extensión)
+                                        
+                                        
+                                        # Mostrar con subtítulo pequeño
+                                        st.markdown(
+                                            f"""
+                                            <div style="font-size:18px; font-weight:bold;">Nombre del wsdl ebs</div>
+                                            <div style="font-size:12px; color:gray;">📂 {st.session_state["ubicacion_wsdl_ebs"]}</div>
+                                            """,
+                                            unsafe_allow_html=True
+                                        )
+                                        
                                         st.markdown(
                                             f"""
                                             <div style="font-size:18px; font-weight:bold;">Versión EBS</div>
