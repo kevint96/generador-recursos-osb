@@ -3227,11 +3227,11 @@ def generar_proyecto():
                                 st.markdown(f"<h6 style='text-align: center;'>{st.session_state["service_name"]}</h6>", unsafe_allow_html=True)
                                 
                                 st.session_state["proxy_exp"] = generar_nombrado_exp(st.session_state["service_name"], "proxy")
-                                st.session_state["ubicacion_proxy_exp"] = st.session_state["nombre_capa_exp"]+"/Proxies/"+st.session_state["proxy_exp"]
+                                st.session_state["ubicacion_proxy_exp"] = st.session_state["ubicacion_proxy_exp"] +st.session_state["proxy_exp"]
                                 st.session_state["pipeline_exp"] = generar_nombrado_exp(st.session_state["service_name"], "pipeline")
-                                st.session_state["ubicacion_pipeline_exp"] = st.session_state["nombre_capa_exp"]+"/Pipeline/"+st.session_state["pipeline_exp"]
+                                st.session_state["ubicacion_pipeline_exp"] = st.session_state["ubicacion_pipeline_exp"] +st.session_state["pipeline_exp"]
                                 st.session_state["wsdl_exp"] = generar_nombrado_exp(st.session_state["service_name"], "wsdl")
-                                st.session_state["ubicacion_wsdl_exp"] = st.session_state["nombre_capa_exp"]+"/Resources/Wsdls/"+st.session_state["wsdl_exp"]
+                                st.session_state["ubicacion_wsdl_exp"] = st.session_state["ubicacion_wsdl_exp"] +st.session_state["wsdl_exp"]
                                 
                                 st.session_state["archivo_wsdl_exp"] = procesar_wsdl(
                                     st.session_state["wsdl_text"],
