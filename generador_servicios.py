@@ -3840,7 +3840,7 @@ def main():
                                             label_visibility="collapsed"
                                         )
                                         
-                                        capa_ebs = st.session_state["capa_seleccionada_ebs"].strip("/")
+                                        capa_ebs = st.session_state["capa_seleccionada_ebs"].split("/")[0]
 
                                         rutas_wsdl_detectadas = set()
 
